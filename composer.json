@@ -21,5 +21,12 @@
             "email": "przyczynski@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "scripts": {
+        "post-install-cmd": [
+            "php artisan vendor:publish --provider='Spatie\Activitylog\ActivitylogServiceProvider' --tag='migrations'",
+            "php artisan migrate",
+            "php artisan vendor:publish --provider='Spatie\Activitylog\ActivitylogServiceProvider' --tag='config'"
+        ]
+    }
 }
