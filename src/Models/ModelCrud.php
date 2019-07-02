@@ -1,6 +1,6 @@
 <?php
 
-namespace Thiagoprz\EasyCrud\Models;
+namespace Thiagoprz\CrudTools\Models;
 
 /**
  * Trait ModelCrud

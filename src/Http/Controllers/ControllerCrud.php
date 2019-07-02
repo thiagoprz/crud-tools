@@ -1,6 +1,6 @@
 <?php
 
-namespace Thiagoprz\EasyCrud\Http\Controllers;
+namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use \Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;

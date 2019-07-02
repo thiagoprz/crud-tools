@@ -7,7 +7,7 @@
             "src/"
         ],
         "psr-4": {
-            "Thiagoprz\\EasyCrud\\": "src"
+            "Thiagoprz\\CrudTools\\": "src"
         }
     },
     "require": {
