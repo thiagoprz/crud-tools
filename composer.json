@@ -1,0 +1,25 @@
+{
+    "name": "thiagoprz/crud-tools",
+    "description": "Easy to use Laravel CRUD package with Controller, Model and Log system built in",
+    "type": "library",
+    "autoload": {
+        "classmap": [
+            "src/"
+        ],
+        "psr-4": {
+            "Thiagoprz\\EasyCrud\\": "src"
+        }
+    },
+    "require": {
+        "php": "^7.1.3",
+        "spatie/laravel-activitylog": "^3.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thiago Przyczynski",
+            "email": "przyczynski@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
