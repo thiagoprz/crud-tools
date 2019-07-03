@@ -75,12 +75,12 @@ trait ControllerCrud
      */
     public function show($id)
     {
-        ${strtolower(class_basename($this->modelClass))} = $this->modelClass::findOrFail($id);
+        $model = $this->modelClass::findOrFail($id);
         $logs = Activity::whereSubjectType($this->modelClass)
             ->whereSubjectId($id)
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
-        return view($this->getViewPath() . '.show', compact(strtolower(class_basename($this->modelClass)), 'logs'));
+        return view($this->getViewPath() . '.show', compact('model', 'logs'));
     }
 
     /**
