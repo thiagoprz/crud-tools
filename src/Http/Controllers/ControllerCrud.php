@@ -122,10 +122,10 @@ trait ControllerCrud
         $model = $this->modelClass::findOrFail($id);
         if (method_exists($this->modelClass, 'fileUploads')) {
             $file_uploads = $this->modelClass::fileUploads($model);
-            foreach ($file_uploads as $file_upload) {
+            foreach ($file_uploads as $file_upload => $file_data) {
                 if ($request->hasFile($file_upload)) {
                     $file = $request->file($file_upload);
-                    $upload = Storage::putFileAs('videos', $file, $file->getBasename());
+                    $upload = Storage::putFileAs($file_data['path'], $file, !isset($file_data['name']) ? $file->getClientOriginalName() : $file_data['name']);
                     $requestData[$file_upload] = $upload;
                 }
             }
