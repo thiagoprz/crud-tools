@@ -4,6 +4,7 @@ namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use \Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Trait ControllerCrud
@@ -62,6 +63,16 @@ trait ControllerCrud
         $this->validate($request, $this->modelClass::validateOn('create'));
         $requestData = $request->all();
         $model = $this->modelClass::create($requestData);
+        if (method_exists($this->modelClass, 'fileUploads')) {
+            $file_uploads = $this->modelClass::fileUploads($model);
+            foreach ($file_uploads as $file_upload) {
+                if ($request->hasFile($file_upload)) {
+                    $file = $request->file($file_upload);
+                    $upload = Storage::putFileAs('videos', $file, $file->getBasename());
+                    $model->update([$file_upload => $upload]);
+                }
+            }
+        }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.added'));
     }
@@ -109,6 +120,16 @@ trait ControllerCrud
         $this->validate($request, $this->modelClass::validateOn('update'));
         $requestData = $request->all();
         $model = $this->modelClass::findOrFail($id);
+        if (method_exists($this->modelClass, 'fileUploads')) {
+            $file_uploads = $this->modelClass::fileUploads($model);
+            foreach ($file_uploads as $file_upload) {
+                if ($request->hasFile($file_upload)) {
+                    $file = $request->file($file_upload);
+                    $upload = Storage::putFileAs('videos', $file, $file->getBasename());
+                    $requestData[$file_upload] = $upload;
+                }
+            }
+        }
         $model->update($requestData);
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.updated'));
