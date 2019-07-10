@@ -66,6 +66,7 @@ Available vars: $model (the model being displayed)
 - CRUD Model:
 
 For models you just need to add the trait ModelCrud and after that create a static property declaring model's validations based on the create, update and/or delete scenarios.
+
 ```
 <?php
 ...
@@ -73,6 +74,7 @@ use Thiagoprz\CrudTools\Models\ModelCrud;
 class User extends Authenticatable
 {
     use ModelCrud;
+    
     /**
      * Model validations
      *
@@ -90,6 +92,57 @@ class User extends Authenticatable
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ],
     ];
+    ...
+}
+```
+Searchable fields:
+
+You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the ControllerCrud. 
+
+```
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class User extends Authenticatable
+{
+    use ModelCrud;
+    /**
+     * Fields that can be searched by (static)method search()
+     *
+     * @var array
+     */
+    static $searchable = [
+        'id' => 'int',
+        'name' => 'string',
+    ];
+    ...
+}
+```
+Upload fields:
+
+You can create a fileUploads method to define which and where your uploadable fields will store the files: 
+
+```
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class User extends Authenticatable
+{
+    use ModelCrud;
+    ...
+    /**
+     * @param Campaign $model
+     * @return array
+     */
+    public static function fileUploads(Campaign $model)
+    {
+        return [
+            'FIELD_NAME' => [
+                'path' => 'FOLDER', // Mandatory
+                'name' => 'FILE_NAME', // (OPTIONAL)if not provided will be the file original name 
+            ],
+        ];
+    }
     ...
 }
 ```
