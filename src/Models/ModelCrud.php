@@ -10,7 +10,7 @@ namespace Thiagoprz\CrudTools\Models;
         'update' => [],
         'delete' => [],
     ];
- * @method static array fileUploads()
+ * @method static array fileUploads($model)
  */
 trait ModelCrud
 {
