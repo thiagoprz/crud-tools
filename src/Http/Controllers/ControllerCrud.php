@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Storage;
 trait ControllerCrud
 {
 
+    /**
+     * Disabling logs if not needed
+     *
+     * @var bool
+     */
+    public $disableLogs = false;
+
     public function getViewPath($forRedirect = false)
     {
         $ns_prefix = '';
@@ -87,11 +94,13 @@ trait ControllerCrud
     public function show($id)
     {
         $model = $this->modelClass::findOrFail($id);
-        $logs = Activity::whereSubjectType($this->modelClass)
-            ->whereSubjectId($id)
-            ->orderBy('created_at', 'DESC')
-            ->paginate(10);
-        return view($this->getViewPath() . '.show', compact('model', 'logs'));
+        if (!$this->disableLogs) {
+            $logs = Activity::whereSubjectType($this->modelClass)
+                ->whereSubjectId($id)
+                ->orderBy('created_at', 'DESC')
+                ->paginate(10);
+        }
+        return view($this->getViewPath() . '.show', !$this->disableLogs ? compact('model', 'logs') : compact('model'));
     }
 
     /**
