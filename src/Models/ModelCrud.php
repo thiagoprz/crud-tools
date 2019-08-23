@@ -63,7 +63,7 @@ trait ModelCrud
                     }
                     if (!empty($data[$field])) {
                         if ($type == 'string') {
-                            if (is_array($field)) {
+                            if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
                                     foreach ($data[$field] as $datum) {
                                         $query_where->orWhere($field, 'LIKE', '%' . $datum . '%');
@@ -73,7 +73,7 @@ trait ModelCrud
                                 $where->where($field, 'LIKE', '%' . $data[$field] . '%');
                             }
                         } elseif ($type == 'int') {
-                            if (is_array($field)) {
+                            if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
                                     foreach ($data[$field] as $datum) {
                                         $query_where->orWhere($field, $datum);
