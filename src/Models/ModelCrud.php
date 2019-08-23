@@ -63,9 +63,25 @@ trait ModelCrud
                     }
                     if (!empty($data[$field])) {
                         if ($type == 'string') {
-                            $where->where($field, 'LIKE', '%' . $data[$field] . '%');
+                            if (is_array($field)) {
+                                $where->where(function($query_where) use($field, $data) {
+                                    foreach ($data[$field] as $datum) {
+                                        $query_where->orWhere($field, 'LIKE', '%' . $datum . '%');
+                                    }
+                                });
+                            } else {
+                                $where->where($field, 'LIKE', '%' . $data[$field] . '%');
+                            }
                         } elseif ($type == 'int') {
-                            $where->where($field, $data[$field]);
+                            if (is_array($field)) {
+                                $where->where(function($query_where) use($field, $data) {
+                                    foreach ($data[$field] as $datum) {
+                                        $query_where->orWhere($field, $datum);
+                                    }
+                                });
+                            } else {
+                                $where->where($field, $data[$field]);
+                            }
                         }
                     }
                 }
