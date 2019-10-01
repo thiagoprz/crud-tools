@@ -10,6 +10,9 @@ namespace Thiagoprz\CrudTools\Models;
         'update' => [],
         'delete' => [],
     ];
+ * @property static $search_order  = [
+        'field' => 'DIRECTION',
+    ];
  * @method static array fileUploads($model)
  */
 trait ModelCrud
@@ -86,6 +89,11 @@ trait ModelCrud
                     }
                 }
             });
+        }
+        if (isset(self::$search_order)) {
+            foreach (self::$search_order as $field => $direction) {
+                $query->orderBy($field, $direction);
+            }
         }
         if (isset(self::$resourceForSearch)) {
             return self::$resourceForSearch::collection(isset($data['no_pagination']) ? $query->get() : $query->paginate(10));
