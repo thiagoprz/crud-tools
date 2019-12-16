@@ -5,15 +5,45 @@ namespace Thiagoprz\CrudTools\Models;
 /**
  * Trait ModelCrud
  * @package Thiagoprz\EasyCrud\Model
- * @property static array $validations  = [
-        'create' => [],
-        'update' => [],
-        'delete' => [],
-    ];
- * @property static $search_order  = [
-        'field' => 'DIRECTION',
-    ];
- * @method static array fileUploads($model)
+ *
+ * @property static array Validations definitions on create, update and delete scenarios
+ *  static $validations  = [
+ *      'create' => [
+ *          'field' => string|mixed,
+ *      ],
+ *      'update' => [
+ *          'field' => string|mixed,
+ *      ],
+ *      'delete' => [
+ *          'field' => string|mixed,
+ *      ]
+ *  ];
+ *
+ * @property static Allows specifying fields that can be searched on search() method
+ *  static $searchable = [
+ *      'string_field' => 'string',
+ *      'int_field' => 'int',
+ *  ];
+ *
+ * @property static $search_order Defines search() method order fields
+ *  static $search_order = ['field' => 'DIRECTION'];
+ *
+ * @property static $search_with Defines the relations to be brought in the search() method
+ *
+ * @property static $search_count Defines which relationship will be counted along in the search() method. Use standard Laravel (see https://laravel.com/docs/master/eloquent-relationships#counting-related-models)
+ *  static $search_count = ['related_model', 'other_related_model'];
+ *
+ * @property static $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
+ *
+ * @method static array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
+ *  public static function fileUploads(Model $model)
+ *  {
+ *      return [
+ *          'photo' => [
+ *              'path' => 'photos/' . str_slug($model->name) . '.jpg',
+ *          ],
+ *      ];
+ *  }
  */
 trait ModelCrud
 {
