@@ -4,8 +4,8 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 ## Table of contents
 * [Installation](#installation)
 * [Setup](#setup)
-* [CRUD Model](#crud-model)
 * [CRUD Controller](#crud-controller)
+* [CRUD Model](#crud-model)
 
 
 ## Installation
