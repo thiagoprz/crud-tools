@@ -18,7 +18,7 @@ You can read Spatie Activity Log [Documentations](https://github.com/spatie/lara
 
 ## Usage
 
-- CRUD Controller:
+### CRUD Controller:
 A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
 
 The next step is to create a folder inside ``resources/views`` with the desired namespace or on root folder if the controller won't be using a specific namespace (admin on the example).
@@ -63,10 +63,12 @@ Available vars: $items (the pagination object containing a filtered collection o
 
 Available vars: $model (the model being displayed)
 
-- CRUD Model:
+### CRUD Model:
 
-For models you just need to add the trait ModelCrud and after that create a static property declaring model's validations based on the create, update and/or delete scenarios.
+For models you just need to add the trait ModelCrud and after that create a static property declaring model's validations (based on the create, update and/or delete scenarios), default order, filtering rules, upload file rules, define resources, and with / countable relationships.
 
+
+- Validations:
 ```
 <?php
 ...
@@ -95,7 +97,7 @@ class User extends Authenticatable
     ...
 }
 ```
-Searchable fields:
+- Searchable fields:
 
 You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the ControllerCrud. 
 
@@ -118,7 +120,34 @@ class User extends Authenticatable
     ...
 }
 ```
-Upload fields:
+
+- Sortable fields:
+
+You can defined the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable. 
+
+```
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class Books extends Model
+{
+    use ModelCrud;
+    /**
+     * Default order
+     *
+     * @var array
+     */
+    static $search_order = [
+        'title' => 'ASC',
+        'updated_at' => 'DESC',
+        'created_at' => 'DESC',
+    ];
+    ...
+}
+```
+
+
+- Upload fields:
 
 You can create a fileUploads method to define which and where your uploadable fields will store the files: 
 

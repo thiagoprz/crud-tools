@@ -25,7 +25,7 @@ namespace Thiagoprz\CrudTools\Models;
  *      'int_field' => 'int',
  *  ];
  *
- * @property static $search_order Defines search() method order fields
+ * @property static $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
  *  static $search_order = ['field' => 'DIRECTION'];
  *
  * @property static $search_with Defines the relations to be brought in the search() method
@@ -120,7 +120,13 @@ trait ModelCrud
                 }
             });
         }
-        if (isset(self::$search_order)) {
+        if (isset($data['order'])) {
+            $orders = explode('|', $data['order']);
+            foreach ($orders as $order) {
+                list($field, $direction) = explode(',', $order);
+                $query->orderBy($field, $direction);
+            }
+        } elseif (isset(self::$search_order)) {
             foreach (self::$search_order as $field => $direction) {
                 $query->orderBy($field, $direction);
             }
