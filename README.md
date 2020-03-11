@@ -1,5 +1,11 @@
 # Laravel Crud Tools
-Easy to use Laravel CRUD package with Controller, Model and Log system built in
+Easy to use Laravel CRUD package with Controller, Model and Log system built in.
+
+## Table of contents
+* [Installation](#installation)
+* [Setup](#setup)
+* [CRUD Model](#crud-model)
+* [CRUD Controller](#crud-controller)
 
 
 ## Installation
@@ -16,7 +22,7 @@ Run migrations:
 You can read Spatie Activity Log [Documentations](https://github.com/spatie/laravel-activitylog)
 
 
-## Usage
+## Setup
 
 ### CRUD Controller:
 A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
