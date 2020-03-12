@@ -95,7 +95,17 @@ trait ModelCrud
                         }
                     }
                     if (!empty($data[$field])) {
-                        if ($type == 'string') {
+                        if ($type == 'string_match') {
+                            if (is_array($data[$field])) {
+                                $where->where(function($query_where) use($field, $data) {
+                                    foreach ($data[$field] as $datum) {
+                                        $query_where->orWhere($field, $datum);
+                                    }
+                                });
+                            } else {
+                                $where->where($field, $data[$field]);
+                            }
+                        } else if ($type == 'string') {
                             if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
                                     foreach ($data[$field] as $datum) {
