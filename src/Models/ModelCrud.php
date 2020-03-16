@@ -97,7 +97,7 @@ trait ModelCrud
                         }
                     }
                     if (!empty($data[$field])) {
-                        if ($type == 'string_match') {
+                        if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
                             if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
                                     foreach ($data[$field] as $datum) {
@@ -107,7 +107,7 @@ trait ModelCrud
                             } else {
                                 $where->where($field, $data[$field]);
                             }
-                        } else if ($type == 'string') {
+                        } else if ($type == 'string') { // Like Search
                             if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
                                     foreach ($data[$field] as $datum) {
@@ -117,23 +117,14 @@ trait ModelCrud
                             } else {
                                 $where->where($field, 'LIKE', '%' . $data[$field] . '%');
                             }
-                        } elseif ($type == 'int') {
-                            if (is_array($data[$field])) {
-                                $where->where(function($query_where) use($field, $data) {
-                                    foreach ($data[$field] as $datum) {
-                                        $query_where->orWhere($field, $datum);
-                                    }
-                                });
-                            } else {
-                                $where->where($field, $data[$field]);
-                            }
                         }
                     }
-                    if ($type == 'date' && !empty($data[$field . '_from'])) {
-                        $where->where($field, '>=', $data[$field . '_from']);
+                    // Date and Datetime implementation for range field search (_from and _to suffixed fields)
+                    if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_from'])) {
+                        $where->where($field, '>=', $data[$field . '_from'] . ($type == 'datetime' ? ' 23:59:59' : ''));
                     }
-                    if ($type == 'date' && !empty($data[$field . '_to'])) {
-                        $where->where($field, '<=', $data[$field . '_to']);
+                    if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_to'])) {
+                        $where->where($field, '<=', $data[$field . '_to'] . ($type == 'datetime' ? ' 23:59:59' : ''));
                     }
                 }
             });
