@@ -127,6 +127,12 @@ trait ModelCrud
                             }
                         }
                     }
+                    if ($type == 'date' && !empty($data[$field . '_from'])) {
+                        $where->where($field, '>=', $data[$field . '_from']);
+                    }
+                    if ($type == 'date' && !empty($data[$field . '_to'])) {
+                        $where->where($field, '<=', $data[$field . '_to']);
+                    }
                 }
             });
         }
