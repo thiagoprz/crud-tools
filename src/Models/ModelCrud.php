@@ -35,6 +35,8 @@ namespace Thiagoprz\CrudTools\Models;
  *
  * @property static $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
  *
+ * @property static $paginationForSearch Pagination Variable
+ *
  * @method static array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
  *  public static function fileUploads(Model $model)
  *  {
@@ -141,10 +143,14 @@ trait ModelCrud
                 $query->orderBy($field, $direction);
             }
         }
-        if (isset(self::$resourceForSearch)) {
-            return self::$resourceForSearch::collection(isset($data['no_pagination']) ? $query->get() : $query->paginate(10));
+        $pagination=10;
+        if (isset(self::$paginationForSearch)){
+            $pagination = intval($paginationForSearch);
         }
-        return isset($data['no_pagination']) ? $query->get() : $query->paginate(10);
+        if (isset(self::$resourceForSearch)) {
+            return self::$resourceForSearch::collection(isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination));
+        }
+        return isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination);
     }
 
 }
