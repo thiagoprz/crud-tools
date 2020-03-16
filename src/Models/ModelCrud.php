@@ -142,7 +142,7 @@ trait ModelCrud
         }
         $pagination=10;
         if (isset(self::$paginationForSearch)){
-            $pagination = intval($paginationForSearch);
+            $pagination = intval(self::$paginationForSearch);
         }
         if (isset(self::$resourceForSearch)) {
             return self::$resourceForSearch::collection(isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination));
