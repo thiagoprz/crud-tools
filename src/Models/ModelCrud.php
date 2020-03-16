@@ -121,10 +121,10 @@ trait ModelCrud
                     }
                     // Date and Datetime implementation for range field search (_from and _to suffixed fields)
                     if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_from'])) {
-                        $where->where($field, '>=', $data[$field . '_from'] . ($type == 'datetime' ? ' 23:59:59' : ''));
+                        $where->where($field, '<=', $data[$field . '_from'] . ($type == 'datetime' ? ' 00:00:00' : ''));
                     }
                     if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_to'])) {
-                        $where->where($field, '<=', $data[$field . '_to'] . ($type == 'datetime' ? ' 23:59:59' : ''));
+                        $where->where($field, '>=', $data[$field . '_to'] . ($type == 'datetime' ? ' 23:59:59' : ''));
                     }
                 }
             });
