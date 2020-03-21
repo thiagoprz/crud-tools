@@ -89,14 +89,14 @@ trait ModelCrud
             $search_fields = self::$searchable;
             $query->where(function($where) use($data, $search_fields) {
                 foreach ($search_fields as $field => $type) {
-                    if (!empty($data['search'])) {
+                    if (isset($data['search']) && !is_null($data['search'])) {
                         if ($type == 'string') {
                             $where->orWhere($field, 'LIKE', '%' . $data['search'] . '%');
                         } elseif ($type == 'int') {
                             $where->Orwhere($field, $data['search']);
                         }
                     }
-                    if (!empty($data[$field])) {
+                    if (isset($data[$field]) && !is_null($data[$field])) {
                         if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
                             if (is_array($data[$field])) {
                                 $where->where(function($query_where) use($field, $data) {
