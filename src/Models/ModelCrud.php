@@ -87,15 +87,21 @@ trait ModelCrud
 
         if (isset(self::$searchable)) {
             $search_fields = self::$searchable;
-            $query->where(function($where) use($data, $search_fields) {
+            // Global "search" field query
+            $query->where(function($where_search) use($data, $search_fields) {
                 foreach ($search_fields as $field => $type) {
                     if (isset($data['search']) && !is_null($data['search'])) {
                         if ($type == 'string') {
-                            $where->orWhere($field, 'LIKE', '%' . $data['search'] . '%');
+                            $where_search->orWhere($field, 'LIKE', '%' . $data['search'] . '%');
                         } elseif ($type == 'int') {
-                            $where->Orwhere($field, $data['search']);
+                            $where_search->Orwhere($field, $data['search']);
                         }
                     }
+                }
+            });
+            // Specific fields query
+            $query->where(function($where) use($data, $search_fields) {
+                foreach ($search_fields as $field => $type) {
                     if (isset($data[$field]) && !is_null($data[$field])) {
                         if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
                             if (is_array($data[$field])) {
