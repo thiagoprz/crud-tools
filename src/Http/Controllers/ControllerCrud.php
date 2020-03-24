@@ -40,7 +40,7 @@ trait ControllerCrud
     public function index(Request $request)
     {
         $items = $this->modelClass::search($request->all());
-        if ($request->ajax())
+        if ($request->ajax() || $request->wantsJson())
         {
             return response()->json($items);
         }
@@ -80,6 +80,10 @@ trait ControllerCrud
                 }
             }
         }
+        if ($request->ajax() || $request->wantsJson())
+        {
+            return response()->json($model);
+        }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.added'));
     }
@@ -91,7 +95,7 @@ trait ControllerCrud
      *
      * @return \Illuminate\View\View
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $model = $this->modelClass::findOrFail($id);
         if (!$this->disableLogs) {
@@ -99,6 +103,10 @@ trait ControllerCrud
                 ->whereSubjectId($id)
                 ->orderBy('created_at', 'DESC')
                 ->paginate(10);
+        }
+        if ($request->ajax() || $request->wantsJson())
+        {
+            return response()->json($model);
         }
         return view($this->getViewPath() . '.show', !$this->disableLogs ? compact('model', 'logs') : compact('model'));
     }
@@ -140,6 +148,10 @@ trait ControllerCrud
             }
         }
         $model->update($requestData);
+        if ($request->ajax() || $request->wantsJson())
+        {
+            return response()->json($model);
+        }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.updated'));
     }
@@ -155,6 +167,10 @@ trait ControllerCrud
     {
         $this->modelClass::destroy($id);
         $url = !$request->input('url_return') ? $this->getViewPath(true) : $request->input('url_return');
+        if ($request->ajax() || $request->wantsJson())
+        {
+            return response()->json(['success' => true, 'error' => false, 'message' => trans('crud.deleted')]);
+        }
         return redirect($url)->with('flash_message', trans('crud.deleted'));
     }
 
