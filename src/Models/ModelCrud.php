@@ -6,7 +6,8 @@ namespace Thiagoprz\CrudTools\Models;
  * Trait ModelCrud
  * @package Thiagoprz\EasyCrud\Model
  *
- * @property static array Validations definitions on create, update and delete scenarios
+ * @staticvar array $validations Validations definitions on create, update and delete scenarios
+ * <code>
  *  static $validations  = [
  *      'create' => [
  *          'field' => string|mixed,
@@ -18,26 +19,34 @@ namespace Thiagoprz\CrudTools\Models;
  *          'field' => string|mixed,
  *      ]
  *  ];
+ * </code>
  *
- * @property static Allows specifying fields that can be searched on search() method
+ * @staticvar array $searchable Allows specifying fields that can be searched on search() method
+ * <code>
  *  static $searchable = [
  *      'string_field' => 'string',
  *      'int_field' => 'int',
  *  ];
+ * </code>
  *
- * @property static $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
+ * @staticvar array $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
+ * <code>
  *  static $search_order = ['field' => 'DIRECTION'];
+ * </code>
  *
- * @property static $search_with Defines the relations to be brought in the search() method
+ * @staticvar array $search_with Defines the relations to be brought in the search() method
  *
- * @property static $search_count Defines which relationship will be counted along in the search() method. Use standard Laravel (see https://laravel.com/docs/master/eloquent-relationships#counting-related-models)
+ * @staticvar array $search_count Defines which relationship will be counted along in the search() method. Use standard Laravel (see https://laravel.com/docs/master/eloquent-relationships#counting-related-models)
+ * <code>
  *  static $search_count = ['related_model', 'other_related_model'];
+ * </code>
  *
- * @property static $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
+ * @staticvar array $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
  *
- * @property static $paginationForSearch Pagination Variable
+ * @staticvar int $paginationForSearch Pagination Variable
  *
- * @method static array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
+ * @method array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
+ * <code>
  *  public static function fileUploads(Model $model)
  *  {
  *      return [
@@ -46,6 +55,7 @@ namespace Thiagoprz\CrudTools\Models;
  *          ],
  *      ];
  *  }
+ * </code>
  */
 trait ModelCrud
 {
