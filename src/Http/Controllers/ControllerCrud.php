@@ -3,6 +3,7 @@
 namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use \Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Storage;
 
@@ -67,7 +68,16 @@ trait ControllerCrud
      */
     public function store(Request $request)
     {
-        $this->validate($request, $this->modelClass::validateOn('create'));
+        if ($request->ajax() || $request->wantsJson()) {
+            $validation = Validator::make($request->all(), $this->modelClass::validateOn('create'));
+            if ($validation->fails()) {
+                return response()->json([
+                    'error' => true,'errors' => $validation->errors()->messages()
+                ], 419);
+            }
+        } else {
+            $this->validate($request, $this->modelClass::validateOn('create'));
+        }
         $requestData = $request->all();
         $model = $this->modelClass::create($requestData);
         if (method_exists($this->modelClass, 'fileUploads')) {
@@ -134,7 +144,16 @@ trait ControllerCrud
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, $this->modelClass::validateOn('update'));
+        if ($request->ajax() || $request->wantsJson()) {
+            $validation = Validator::make($request->all(), $this->modelClass::validateOn('update'));
+            if ($validation->fails()) {
+                return response()->json([
+                    'error' => true,'errors' => $validation->errors()->messages()
+                ], 419);
+            }
+        } else {
+            $this->validate($request, $this->modelClass::validateOn('update'));
+        }
         $requestData = $request->all();
         $model = $this->modelClass::findOrFail($id);
         if (method_exists($this->modelClass, 'fileUploads')) {
