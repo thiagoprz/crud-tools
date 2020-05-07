@@ -43,6 +43,9 @@ trait ControllerCrud
         $items = $this->modelClass::search($request->all());
         if ($request->ajax() || $request->wantsJson())
         {
+            if (property_exists($this->modelClass, 'resourceForSearch')) {
+                return $items;
+            }
             return response()->json($items);
         }
         return view($this->getViewPath() . '.index', compact('items'));
