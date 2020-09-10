@@ -1,0 +1,32 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyRootNamespaceHttp\Controllers\Controller;
+use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
+use Illuminate\Http\Request;
+use {{modelNamespace}};
+
+/**
+ * Class DummyClass
+ * @package DummyNamespace
+ */
+class DummyClass extends Controller
+{
+    use ControllerCrud;
+
+    /**
+     * CRUD model class
+     */
+    public $modelClass = {{modelName}}::class;
+
+    /**
+     * Controller constructor
+     */
+    public function __construct()
+    {
+        // Uncomment if you are not using the Logable trait on the model class
+        //$this->disableLogs = true;
+    }
+
+}
