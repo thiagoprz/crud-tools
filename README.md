@@ -181,3 +181,24 @@ class User extends Authenticatable
     ...
 }
 ```
+
+### CRUD Generators
+
+- Controllers:
+
+You can create a standard Controller to work with a model by using the following command:
+
+``` php artisan make:crud-controller NAMESPACE1/NAMEController NAMESPACE2/Model ```
+
+> NAMESPACE1: is the name of the Controller's namespace
+>
+> NAMEController: is the name of the controller
+>
+> NAMESPACE2: is the name of the Model's namespace
+>
+> Model: Name of the model
+
+## Supported By Jetbrains
+This project is being developed with the help of Jetbrains through its project to support Open Source software.
+
+![Test Image 1](support/jetbrains.svg)
