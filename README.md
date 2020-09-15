@@ -226,4 +226,5 @@ This project is being developed with the help of [Jetbrains](https://www.jetbrai
 
 ### Buy me a Coffee
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S4273NJ)
-<a href="https://www.buymeacoffee.com/thiagoprz" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;"></a>
+[![buy-coffee](https://www.tecki.com.br/temp/bu-me-a-coffee.png)](https://www.buymeacoffee.com/thiagoprz)
+
