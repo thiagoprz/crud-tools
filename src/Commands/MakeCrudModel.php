@@ -2,6 +2,7 @@
 namespace Thiagoprz\CrudTools\Commands;
 
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
 
 /**
  * Class MakeCrudModel
@@ -73,7 +74,7 @@ class MakeCrudModel extends GeneratorCommand
         $table = $this->option('table');
         if (!$table) {
             $modelClass = explode('/', $this->argument('name'));
-            $table = last($modelClass);
+            $table = Str::lower(Str::plural(last($modelClass)));
         }
         $stub = str_replace('{{table}}', $table, $stub);
 

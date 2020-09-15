@@ -5,13 +5,10 @@ namespace DummyNamespace;
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Models\ModelCrud;
 {{useSoftDeletes}}
-
 class DummyClass extends Model
 {
     use ModelCrud;
-
     {{softDeletes}}
-
     /**
      * The database table used by the model.
      *
