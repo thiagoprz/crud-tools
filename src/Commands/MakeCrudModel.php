@@ -93,7 +93,7 @@ class MakeCrudModel extends GeneratorCommand
             $searchable_fields = explode(',', $this->option('searchable'));
             if (count($searchable_fields) > 0) {
                 $searchable_fields = array_map(function($field) {
-                    return "\t\t'$field' => 'string'," . PHP_EOL;
+                    return "\t\t'$field' => 'string'" . PHP_EOL;
                 }, $searchable_fields);
                 $stub = str_replace('{{searchable}}', PHP_EOL . implode(', ', $searchable_fields) . "\t", $stub);
             }
