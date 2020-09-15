@@ -3,6 +3,7 @@ namespace Thiagoprz\CrudTools;
 
 use Illuminate\Support\ServiceProvider;
 use Thiagoprz\CrudTools\Commands\MakeCrudController;
+use Thiagoprz\CrudTools\Commands\MakeCrudModel;
 
 /**
  * Class CrudToolsServiceProvider
@@ -28,6 +29,7 @@ class CrudToolsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MakeCrudController::class,
+                MakeCrudModel::class,
             ]);
         }
         // Publishes CRUD Tools configuration file
