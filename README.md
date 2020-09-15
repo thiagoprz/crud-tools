@@ -3,10 +3,13 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 
 ## Table of contents
 * [Installation](#installation)
-* [Setup](#setup)
-* [CRUD Controller](#crud-controller)
-* [CRUD Model](#crud-model)
-
+* [Usage](#usage)  
+  - [CRUD Controller](#crud-controller)
+  - [CRUD Model](#crud-model)
+* [CRUD Generators](#crud-generators)
+  - [Controller Generator](#controller-generator)
+  - [Model Generator](#model-generator)
+* [Support](#support)
 
 ## Installation
 Install through composer using: ``composer install thiagoprz\crud-tools``
@@ -22,7 +25,7 @@ Run migrations:
 You can read Spatie Activity Log [Documentations](https://github.com/spatie/laravel-activitylog)
 
 
-## Setup
+## Usage
 
 ### CRUD Controller:
 A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
@@ -182,23 +185,44 @@ class User extends Authenticatable
 }
 ```
 
-### CRUD Generators
+## CRUD Generators
 
-- Controllers:
+### Controller Generator:
 
 You can create a standard Controller to work with a model by using the following command:
 
 ``` php artisan make:crud-controller NAMESPACE1/NAMEController NAMESPACE2/Model ```
 
-> NAMESPACE1: is the name of the Controller's namespace
+> NAMESPACE1: Controller's namespace
 >
 > NAMEController: is the name of the controller
 >
-> NAMESPACE2: is the name of the Model's namespace
+> NAMESPACE2: Model's namespace
 >
 > Model: Name of the model
 
-## Supported By Jetbrains
-This project is being developed with the help of Jetbrains through its project to support Open Source software.
+### Model Generator:
+To easily create a model with all Crud Tools enabled use:
+```
+php artisan make:model-crud NAMESPACE/Model   
+```
+> NAMESPACE: Model's namespace
+> Model: Name of the model
+
+- Available options
+  - **--fillable**: comma separated fields for fillable attributes
+  - **--searchable**: comma separated fields for searchable attributes (based on search() method)
+  - **--primaryKey**: field or comma separated fields that are the table's primary key
+  - **--softDeletes**: if passed enables SoftDeletes trait on class
+  - **--uploads**: if passed adds fileUploads() method on class 
+
+
+## Support
+
+### Supported By Jetbrains
+This project is being developed with the help of [Jetbrains](https://www.jetbrains.com/?from=LaravelCrudTools) through its project to support Open Source software.
 
 ![Test Image 1](support/jetbrains.svg)
+
+### Buy me a Coffee
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S4273NJ)
