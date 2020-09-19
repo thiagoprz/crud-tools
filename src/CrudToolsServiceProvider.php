@@ -34,7 +34,7 @@ class CrudToolsServiceProvider extends ServiceProvider
         }
         // Publishes CRUD Tools configuration file
         $this->publishes([
-            __DIR__ . '/../config/crud-tools.php' => config_path('crud-tools.php'),
+            __DIR__ . '/config/crud-tools.php' => config_path('crud-tools.php'),
         ]);
     }
 }

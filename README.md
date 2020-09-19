@@ -9,20 +9,16 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 * [CRUD Generators](#crud-generators)
   - [Controller Generator](#controller-generator)
   - [Model Generator](#model-generator)
+* [Enable Logs](#enable-logs)
 * [Support](#support)
 
 ## Installation
 Install through composer using: ``composer install thiagoprz\crud-tools``
 
-Run after install scripts for Spatie Activity Logger:
+Publish Crud Tools service provider (optional if you won't use [CRUD Generators](#crud-generators)):
 
-``php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="migrations"``
+`` php artisan vendor:publish --provider="Thiagoprz\CrudTools\CrudToolsServiceProvider"``
 
-Run migrations:
-
-``php artisan migrate``
-
-You can read Spatie Activity Log [Documentations](https://github.com/spatie/laravel-activitylog)
 
 
 ## Usage
@@ -125,10 +121,27 @@ class User extends Authenticatable
     static $searchable = [
         'id' => 'int',
         'name' => 'string',
+        'created_at' => 'datetime',
     ];
     ...
 }
 ```
+Types available: int, string, date, datetime and decimal.
+
+You can use input filters using "_from" and "_to" suffix on date, datetime and decimal fields:
+
+``` 
+<!-- Filtering created_at usig field "from" ( where created_at >= $created_at_from ) -->
+<label>Period from: </label>
+<input type="date" name="created_at_from">
+
+<!-- Filtering created_at usig field "to" ( where created_at <= $created_at_to ) -->
+<label>To:</label>
+<input type="date" name="created_at_to">
+```
+
+
+
 
 - Sortable fields:
 
@@ -215,6 +228,17 @@ php artisan make:model-crud NAMESPACE/Model
   - **--primaryKey**: field or comma separated fields that are the table's primary key
   - **--softDeletes**: if passed enables SoftDeletes trait on class
   - **--uploads**: if passed adds fileUploads() method on class 
+
+## Enable Logs
+To enable automatic logs on your models you need to publish Spatie Activity Logger migrations:
+
+``php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="migrations"``
+
+Run migrations:
+
+``php artisan migrate``
+
+For more information you can read Spatie Activity Log [Documentations](https://github.com/spatie/laravel-activitylog).
 
 
 ## Support

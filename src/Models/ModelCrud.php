@@ -5,8 +5,7 @@ namespace Thiagoprz\CrudTools\Models;
 /**
  * Trait ModelCrud
  * @package Thiagoprz\EasyCrud\Model
- *
- * @staticvar array $validations Validations definitions on create, update and delete scenarios
+ * @property array $validations Validations definitions on create, update and delete scenarios
  * <code>
  *  static $validations  = [
  *      'create' => [
@@ -20,31 +19,24 @@ namespace Thiagoprz\CrudTools\Models;
  *      ]
  *  ];
  * </code>
- *
- * @staticvar array $searchable Allows specifying fields that can be searched on search() method
+ * @property array $searchable Allows specifying fields that can be searched on search() method
  * <code>
  *  static $searchable = [
  *      'string_field' => 'string',
  *      'int_field' => 'int',
  *  ];
  * </code>
- *
- * @staticvar array $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
+ * @property array $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
  * <code>
  *  static $search_order = ['field' => 'DIRECTION'];
  * </code>
- *
- * @staticvar array $search_with Defines the relations to be brought in the search() method
- *
- * @staticvar array $search_count Defines which relationship will be counted along in the search() method. Use standard Laravel (see https://laravel.com/docs/master/eloquent-relationships#counting-related-models)
+ * @property array $search_with Defines the relations to be brought in the search() method
+ * @property array $search_count Defines which relationship will be counted along in the search() method. Use standard Laravel (see https://laravel.com/docs/master/eloquent-relationships#counting-related-models)
  * <code>
  *  static $search_count = ['related_model', 'other_related_model'];
  * </code>
- *
- * @staticvar array $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
- *
- * @staticvar int $paginationForSearch Pagination Variable
- *
+ * @property array $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
+ * @property int $paginationForSearch Pagination Variable *
  * @method array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
  * <code>
  *  public static function fileUploads(Model $model)
@@ -53,6 +45,22 @@ namespace Thiagoprz\CrudTools\Models;
  *          'photo' => [
  *              'path' => 'photos/' . str_slug($model->name) . '.jpg',
  *          ],
+ *      ];
+ *  }
+ * </code>
+ * @method array validations() Define validations rules with a method instead of using $validations static property
+ * <code>
+ *  public static function validations() {
+ *      return [
+ *          'create' => [
+ *              'field' => string|mixed,
+ *          ],
+ *          'update' => [
+ *              'field' => string|mixed,
+ *          ],
+ *          'delete' => [
+ *              'field' => string|mixed,
+ *          ]
  *      ];
  *  }
  * </code>
@@ -73,6 +81,10 @@ trait ModelCrud
                 $scenario = 'create';
             }
             return self::$validations[$scenario];
+        }
+        if (method_exists(self::class, 'validations')) { // Using validations through a method
+            $validations = self::validations($scenario);
+            return $validations[$scenario];
         }
         return [];
     }
@@ -135,12 +147,22 @@ trait ModelCrud
                             }
                         }
                     }
-                    // Date and Datetime implementation for range field search (_from and _to suffixed fields)
-                    if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_from'])) {
-                        $where->where($field, '>=', $data[$field . '_from'] . ($type == 'datetime' ? ' 00:00:00' : ''));
-                    }
-                    if (($type == 'date' || $type == 'datetime') && !empty($data[$field . '_to'])) {
-                        $where->where($field, '<=', $data[$field . '_to'] . ($type == 'datetime' ? ' 23:59:59' : ''));
+                    // Date, Datetime and Decimal implementation for range field search (_from and _to suffixed fields)
+                    if ($type == 'date' || $type == 'datetime' || $type == 'decimal') {
+                        if (!empty($data[$field . '_from'])) {
+                            $value = $data[$field . '_from'];
+                            if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
+                                $value .= ' 00:00:00';
+                            }
+                            $where->where($field, '>=', $value);
+                        }
+                        if (!empty($data[$field . '_to'])) {
+                            $value = $data[$field . '_from'];
+                            if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
+                                $value .= ' 00:00:00';
+                            }
+                            $where->where($field, '<=', $value);
+                        }
                     }
                 }
             });
@@ -160,10 +182,11 @@ trait ModelCrud
         if (isset(self::$paginationForSearch)){
             $pagination = intval(self::$paginationForSearch);
         }
+        $result = isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination);
         if (isset(self::$resourceForSearch)) {
-            return self::$resourceForSearch::collection(isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination));
+            return self::$resourceForSearch::collection($result);
         }
-        return isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination);
+        return $result;
     }
 
 }
