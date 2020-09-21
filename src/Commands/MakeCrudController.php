@@ -44,7 +44,11 @@ class MakeCrudController extends GeneratorCommand
     protected function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());
-        $modelClass = $this->rootNamespace() . str_replace('/', '\\', $this->argument('model'));
+        if (strpos($this->argument('model'), '/') === 0) { // External Model class
+            $modelClass = str_replace('/', '\\', $this->argument('model'));
+        } else {
+            $modelClass = $this->rootNamespace() . str_replace('/', '\\', $this->argument('model'));
+        }
 
         $class = new \ReflectionClass($modelClass);
         $stub = str_replace(['{{modelName}}', '{{modelNamespace}}'], [$class->getShortName(), $class->getName()], $stub);
