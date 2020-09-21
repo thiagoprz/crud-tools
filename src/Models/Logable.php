@@ -15,9 +15,8 @@ trait Logable
      *
      * @return void
      */
-    protected static function boot()
+    public static function bootLogable()
     {
-        parent::boot();
         $user = \Illuminate\Support\Facades\Auth::user();
         static::created(function($model) use($user) {
             $class = strtolower(class_basename($model));
@@ -35,6 +34,11 @@ trait Logable
                 ->withProperties($model->getOriginal())
                 ->log(trans('log.updated', ['model' => trans('entities.' . $class)]));
         });
+    }
+
+    public function setLogAttribute()
+    {
+        // Empty method
     }
 
 }
