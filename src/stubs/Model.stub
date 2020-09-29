@@ -36,7 +36,7 @@ class DummyClass extends Model
      * @see ModelCrud::search()
      * @var array
      */
-    protected $searchable = [{{searchable}}];
+    static $searchable = [{{searchable}}];
 
     /**
      * Default search order
