@@ -23,7 +23,7 @@ trait Logable
             activity()
                 ->performedOn($model)
                 ->causedBy($user)
-                ->withProperties($model->getOriginal())
+                ->withProperties(self::getAttributesFiltered($model))
                 ->log(trans('log.created', ['model' => trans('entities.' . $class)]));
         });
         static::updated(function($model) use($user) {
@@ -31,9 +31,24 @@ trait Logable
             activity()
                 ->performedOn($model)
                 ->causedBy($user)
-                ->withProperties($model->getOriginal())
+                ->withProperties(self::getAttributesFiltered($model))
                 ->log(trans('log.updated', ['model' => trans('entities.' . $class)]));
         });
+    }
+
+    /**
+     * @param $model
+     */
+    private static function getAttributesFiltered($model)
+    {
+        $attributes = $model->getOriginal();
+        if (!empty($model->hidden)) {
+            $hidden = $model->hidden;
+            $attributes = array_filter($attributes, function($attr, $field) use($hidden) {
+                return !in_array($field, $hidden);
+            }, ARRAY_FILTER_USE_BOTH);
+        }
+        return $attributes;
     }
 
     public function setLogAttribute()
