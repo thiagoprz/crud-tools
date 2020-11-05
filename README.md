@@ -217,7 +217,7 @@ You can create a standard Controller to work with a model by using the following
 ### Model Generator:
 To easily create a model with all Crud Tools enabled use:
 ```
-php artisan make:model-crud NAMESPACE/Model   
+php artisan make:crud-model NAMESPACE/Model   
 ```
 > NAMESPACE: Model's namespace
 > Model: Name of the model
