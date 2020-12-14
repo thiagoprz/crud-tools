@@ -124,48 +124,23 @@ trait ModelCrud
             // Specific fields query
             $query->where(function($where) use($data, $search_fields) {
                 foreach ($search_fields as $field => $type) {
-                    if (isset($data[$field]) && !is_null($data[$field])) {
-                        if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
-                            if (is_array($data[$field])) {
-                                $where->where(function($query_where) use($field, $data) {
-                                    foreach ($data[$field] as $datum) {
-                                        $query_where->orWhere($field, $datum);
-                                    }
-                                });
-                            } else {
-                                $where->where($field, $data[$field]);
-                            }
-                        } else if ($type == 'string') { // Like Search
-                            if (is_array($data[$field])) {
-                                $where->where(function($query_where) use($field, $data) {
-                                    foreach ($data[$field] as $datum) {
-                                        $query_where->orWhere($field, 'LIKE', '%' . $datum . '%');
-                                    }
-                                });
-                            } else {
-                                $where->where($field, 'LIKE', '%' . $data[$field] . '%');
-                            }
-                        }
+                    if (strstr($field, '.') !== false) {
+                        continue;
                     }
-                    // Date, Datetime and Decimal implementation for range field search (_from and _to suffixed fields)
-                    if ($type == 'date' || $type == 'datetime' || $type == 'decimal') {
-                        if (!empty($data[$field . '_from'])) {
-                            $value = $data[$field . '_from'];
-                            if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
-                                $value .= ' 00:00:00';
-                            }
-                            $where->where($field, '>=', $value);
-                        }
-                        if (!empty($data[$field . '_to'])) {
-                            $value = $data[$field . '_from'];
-                            if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
-                                $value .= ' 00:00:00';
-                            }
-                            $where->where($field, '<=', $value);
-                        }
-                    }
+                    self::buildQuery($where, $field, $type, $data);
                 }
             });
+            foreach ($search_fields as $field => $type) {
+                if (strstr($field, '.') === false) {
+                    continue;
+                }
+                $arr = explode('.', $field);
+                $real_field = $arr[1];
+                $table = $arr[0];
+                $query->whereHas($table, function($where) use($data, $real_field, $type) {
+                        self::buildQuery($where, $real_field, $type, $data);
+                });
+            }
         }
         if (isset($data['order'])) {
             $orders = explode('|', $data['order']);
@@ -187,6 +162,50 @@ trait ModelCrud
             return self::$resourceForSearch::collection($result);
         }
         return $result;
+    }
+
+    private static function buildQuery(&$where, $field, $type, $data)
+    {
+        if (isset($data[$field]) && !is_null($data[$field])) {
+            if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
+                if (is_array($data[$field])) {
+                    $where->where(function($query_where) use($field, $data) {
+                        foreach ($data[$field] as $datum) {
+                            $query_where->orWhere($field, $datum);
+                        }
+                    });
+                } else {
+                    $where->where($field, $data[$field]);
+                }
+            } else if ($type == 'string') { // Like Search
+                if (is_array($data[$field])) {
+                    $where->where(function($query_where) use($field, $data) {
+                        foreach ($data[$field] as $datum) {
+                            $query_where->orWhere($field, 'LIKE', '%' . $datum . '%');
+                        }
+                    });
+                } else {
+                    $where->where($field, 'LIKE', '%' . $data[$field] . '%');
+                }
+            }
+        }
+        // Date, Datetime and Decimal implementation for range field search (_from and _to suffixed fields)
+        if ($type == 'date' || $type == 'datetime' || $type == 'decimal') {
+            if (!empty($data[$field . '_from'])) {
+                $value = $data[$field . '_from'];
+                if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
+                    $value .= ' 00:00:00';
+                }
+                $where->where($field, '>=', $value);
+            }
+            if (!empty($data[$field . '_to'])) {
+                $value = $data[$field . '_from'];
+                if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
+                    $value .= ' 00:00:00';
+                }
+                $where->where($field, '<=', $value);
+            }
+        }
     }
 
 }
