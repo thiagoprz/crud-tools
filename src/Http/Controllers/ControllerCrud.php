@@ -110,7 +110,11 @@ trait ControllerCrud
      */
     public function show(Request $request, $id)
     {
-        $model = $this->modelClass::findOrFail($id);
+        if (isset($request->with_trashed) && !isset($this->modelClass::$withTrashedForbidden)) {
+            $model = $this->modelClass::withTrashed()->findOrFail($id);
+        } else {
+            $model = $this->modelClass::findOrFail($id);
+        }
         if (!$this->disableLogs) {
             $logs = Activity::whereSubjectType($this->modelClass)
                 ->whereSubjectId($id)

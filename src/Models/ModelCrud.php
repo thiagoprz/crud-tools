@@ -36,7 +36,9 @@ namespace Thiagoprz\CrudTools\Models;
  *  static $search_count = ['related_model', 'other_related_model'];
  * </code>
  * @property array $resourceForSearch Defines a Resource to be used as the return of the search() method allowing to use Resources on api's for instance (see https://laravel.com/docs/master/eloquent-resources)
- * @property int $paginationForSearch Pagination Variable *
+ * @property int $paginationForSearch Pagination Variable
+ * @property boolean $withTrashedForbidden withTrashed() gets forbidden on this class
+ * @property boolean $onlyTrashedForbidden onlyTrashed() gets forbidden on this class
  * @method array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
  * <code>
  *  public static function fileUploads(Model $model)
