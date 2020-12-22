@@ -153,6 +153,15 @@ trait ModelCrud
                 $query->orderBy($field, $direction);
             }
         }
+
+        if (isset($data['with_trashed']) && !isset(self::$withTrashedForbidden)) { // Brings excluded records also
+            $query->withTrashed();
+        }
+
+        if (isset($data['only_trashed']) && !isset(self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
+            $query->onlyTrashed();
+        }
+
         $pagination=10;
         if (isset(self::$paginationForSearch)){
             $pagination = intval(self::$paginationForSearch);
