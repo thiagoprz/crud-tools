@@ -153,6 +153,15 @@ trait ModelCrud
                 $query->orderBy($field, $direction);
             }
         }
+
+        if (isset($data['with_trashed']) && !isset(self::$withTrashedForbidden)) { // Brings excluded records also
+            $query->withTrashed();
+        }
+
+        if (isset($data['only_trashed']) && !isset(self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
+            $query->onlyTrashed();
+        }
+
         $pagination=10;
         if (isset(self::$paginationForSearch)){
             $pagination = intval(self::$paginationForSearch);
@@ -164,6 +173,13 @@ trait ModelCrud
         return $result;
     }
 
+    /**
+     * Builds the main query based on a informed field
+     * @param mixed $where Query builder command
+     * @param string $field "The" field
+     * @param string $type Type of field (string, int, date, datetime...)
+     * @param array $data Data sent on $request
+     */
     private static function buildQuery(&$where, $field, $type, $data)
     {
         if (isset($data[$field]) && !is_null($data[$field])) {
