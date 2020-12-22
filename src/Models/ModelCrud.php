@@ -130,15 +130,15 @@ trait ModelCrud
                     self::buildQuery($where, $field, $type, $data);
                 }
             });
-            foreach ($search_fields as $field => $type) {
+            foreach ($search_fields as $field => $definiton) {
                 if (strstr($field, '.') === false) {
                     continue;
                 }
                 $arr = explode('.', $field);
                 $real_field = $arr[1];
                 $table = $arr[0];
-                $query->whereHas($table, function($where) use($data, $real_field, $type) {
-                        self::buildQuery($where, $real_field, $type, $data);
+                $query->whereHas($table, function($where) use($data, $real_field, $definiton) {
+                    self::buildQuery($where, $real_field, $definiton['type'], $data, $definiton['table'] . '.' . $real_field);
                 });
             }
         }
@@ -153,15 +153,6 @@ trait ModelCrud
                 $query->orderBy($field, $direction);
             }
         }
-
-        if (isset($data['with_trashed']) && !isset(self::$withTrashedForbidden)) { // Brings excluded records also
-            $query->withTrashed();
-        }
-
-        if (isset($data['only_trashed']) && !isset(self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
-            $query->onlyTrashed();
-        }
-
         $pagination=10;
         if (isset(self::$paginationForSearch)){
             $pagination = intval(self::$paginationForSearch);
@@ -180,14 +171,17 @@ trait ModelCrud
      * @param string $type Type of field (string, int, date, datetime...)
      * @param array $data Data sent on $request
      */
-    private static function buildQuery(&$where, $field, $type, $data)
+    private static function buildQuery(&$where, $field, $type, $data, $aliasField = null)
     {
+        if (!$aliasField) {
+            $aliasField = $field;
+        }
         if (isset($data[$field]) && !is_null($data[$field])) {
             if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
                 if (is_array($data[$field])) {
-                    $where->where(function($query_where) use($field, $data) {
+                    $where->where(function($query_where) use($field, $data, $aliasField) {
                         foreach ($data[$field] as $datum) {
-                            $query_where->orWhere($field, $datum);
+                            $query_where->orWhere($aliasField, $datum);
                         }
                     });
                 } else {
@@ -195,9 +189,9 @@ trait ModelCrud
                 }
             } else if ($type == 'string') { // Like Search
                 if (is_array($data[$field])) {
-                    $where->where(function($query_where) use($field, $data) {
+                    $where->where(function($query_where) use($field, $data, $aliasField) {
                         foreach ($data[$field] as $datum) {
-                            $query_where->orWhere($field, 'LIKE', '%' . $datum . '%');
+                            $query_where->orWhere($aliasField, 'LIKE', '%' . $datum . '%');
                         }
                     });
                 } else {
@@ -219,7 +213,7 @@ trait ModelCrud
                 if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
                     $value .= ' 00:00:00';
                 }
-                $where->where($field, '<=', $value);
+                $where->where($aliasField, '<=', $value);
             }
         }
     }
