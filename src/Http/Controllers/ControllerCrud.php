@@ -123,7 +123,7 @@ trait ControllerCrud
         }
         if ($request->ajax() || $request->wantsJson())
         {
-            return response()->json($model);
+            return response()->json(isset($this->modelClass::$resourceForSearch) ? new $this->modelClass::$resourceForSearch($model) : $model);
         }
         return view($this->getViewPath() . '.show', !$this->disableLogs ? compact('model', 'logs') : compact('model'));
     }
