@@ -191,7 +191,16 @@ trait ControllerCrud
      */
     public function destroy(Request $request, $id)
     {
-        $this->modelClass::destroy($id);
+        if (isset($request->with_trashed) && !isset($this->modelClass::$withTrashedForbidden)) {
+            $model = $this->modelClass::withTrashed()->findOrFail($id);
+            if ($model->deleted_at) {
+                $model->forceDelete();
+            } else {
+                $this->modelClass::destroy($id);
+            }
+        } else {
+            $this->modelClass::destroy($id);
+        }
         $url = !$request->input('url_return') ? $this->getViewPath(true) : $request->input('url_return');
         if ($request->ajax() || $request->wantsJson())
         {
