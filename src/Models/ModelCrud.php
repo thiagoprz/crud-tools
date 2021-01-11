@@ -212,7 +212,7 @@ trait ModelCrud
             }
         }
         // Date, Datetime and Decimal implementation for range field search (_from and _to suffixed fields)
-        if ($type == 'date' || $type == 'datetime' || $type == 'decimal') {
+        if ($type == 'date' || $type == 'datetime' || $type == 'decimal' || $type == 'int') {
             if (!empty($data[$field . '_from'])) {
                 $value = $data[$field . '_from'];
                 if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
