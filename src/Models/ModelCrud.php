@@ -39,6 +39,7 @@ namespace Thiagoprz\CrudTools\Models;
  * @property int $paginationForSearch Pagination Variable
  * @property boolean $withTrashedForbidden withTrashed() gets forbidden on this class
  * @property boolean $onlyTrashedForbidden onlyTrashed() gets forbidden on this class
+ * @property boolean $noPaginationForbidden allow remove pagination forbidden on this class
  * @method array fileUploads($model) Used to define which fields are file based and will be using a upload method with customized storage path defined in it
  * <code>
  *  public static function fileUploads(Model $model)
@@ -156,11 +157,11 @@ trait ModelCrud
             }
         }
 
-        if (isset($data['with_trashed']) && !isset(self::$withTrashedForbidden)) { // Brings excluded records also
+        if (isset($data['with_trashed']) && (!isset(self::$withTrashedForbidden) || !self::$withTrashedForbidden)) { // Brings excluded records also
             $query->withTrashed();
         }
 
-        if (isset($data['only_trashed']) && !isset(self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
+        if (isset($data['only_trashed']) && (!isset(self::$onlyTrashedForbidden) || !self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
             $query->onlyTrashed();
         }
 
@@ -168,7 +169,7 @@ trait ModelCrud
         if (isset(self::$paginationForSearch)){
             $pagination = intval(self::$paginationForSearch);
         }
-        $result = isset($data['no_pagination']) ? $query->get() : $query->paginate($pagination);
+        $result = isset($data['no_pagination']) && (!isset(self::$noPaginationForbidden) || !self::$noPaginationForbidden) ? $query->get() : $query->paginate($pagination);
         if (isset(self::$resourceForSearch)) {
             return self::$resourceForSearch::collection($result);
         }

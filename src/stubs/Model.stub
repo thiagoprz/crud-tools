@@ -5,10 +5,19 @@ namespace DummyNamespace;
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Models\ModelCrud;
 {{useSoftDeletes}}
+{{useLogable}}
+
+/**
+ * Class DummyClass
+ * @package DummyNamespace
+ {{properties}}
+ */
 class DummyClass extends Model
 {
     use ModelCrud;
     {{softDeletes}}
+    {{logable}}
+
     /**
      * The database table used by the model.
      *
@@ -41,5 +50,33 @@ class DummyClass extends Model
     /**
      * Default search order
      */
-    //static $search_order = ['id' => 'ASC'];
+    static $search_order = ['id' => 'ASC'];
+
+    /**
+     * Model validations
+     */
+    static $validations = [
+        'create' => [],
+        //'update' => [],
+    ];
+
+    /**
+     * Forbade access to deleted records using "with_trashed" param on request?
+     */
+    static $withTrashedForbidden = false;
+
+    /**
+     * Forbade access to show only deleted records using "only_trashed" param on request?
+     */
+    static $onlyTrashedForbidden = false;
+
+    /**
+     * Forbade access to return a non paginated result through search method using "no_pagination" param on request?
+     */
+    static $noPaginationForbidden = false;
+
+    /**
+     * Number of records to display per page
+     */
+    static $paginationForSearch = 10;
 }

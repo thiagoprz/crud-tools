@@ -9,13 +9,13 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 * [CRUD Generators](#crud-generators)
   - [Controller Generator](#controller-generator)
   - [Model Generator](#model-generator)
-* [Enable Logs](#enable-logs)
+* [Enabling Logs](#enabling-logs)
 * [Support](#support)
 
 ## Installation
 Install through composer using: ``composer install thiagoprz\crud-tools``
 
-Publish Crud Tools service provider (optional if you won't use [CRUD Generators](#crud-generators)):
+Publish Crud Tools service provider:
 
 `` php artisan vendor:publish --provider="Thiagoprz\CrudTools\CrudToolsServiceProvider"``
 
@@ -141,6 +141,15 @@ You can use input filters using "_from" and "_to" suffix on date, datetime and d
 ```
 
 
+| Type      | Description         | Suffixes: _from _to | 
+| --------- | ------------------- | ------------------- |
+|  int      | Integer fields, can be used to search a range of records by using "_from" and "_to"  suffixes | Yes |
+| decimal   | Float, Double, Real or any decimal type of field.  "_from" and "_to"  suffixes allowed | Yes |
+| string    | Any string field to be search using "WHERE field LIKE '%SEARCH%'" | No |
+| string    | Any string field to be search using "WHERE field = 'SEARCH'" | No |
+| datetime  | Datetime and Timestamp fields | Yes |
+| date      | Date fields | Yes |
+
 
 
 - Sortable fields:
@@ -228,8 +237,9 @@ php artisan make:crud-model NAMESPACE/Model
   - **--primaryKey**: field or comma separated fields that are the table's primary key
   - **--softDeletes**: if passed enables SoftDeletes trait on class
   - **--uploads**: if passed adds fileUploads() method on class 
+  - **--logable**: adds Logable trait on model  
 
-## Enable Logs
+## Enabling Logs
 To enable automatic logs on your models you need to publish Spatie Activity Logger migrations:
 
 ``php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="migrations"``
@@ -242,6 +252,9 @@ For more information you can read Spatie Activity Log [Documentations](https://g
 
 
 ## Support
+
+### Issues
+Please feel free to indicate any issues on this packages, it will help a lot. I will address it as soon as possible.
 
 ### Supported By Jetbrains
 This project is being developed with the help of [Jetbrains](https://www.jetbrains.com/?from=LaravelCrudTools) through its project to support Open Source software.

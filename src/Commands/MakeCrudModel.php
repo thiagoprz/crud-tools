@@ -23,7 +23,8 @@ class MakeCrudModel extends GeneratorCommand
                             {--hidden= : List of hidden columns (separated by commas). [optional]}
                             {--searchable= : List of fields that will be present on search() method (separated by commas). [optional]}
                             {--softDeletes : Using soft deletes? (specify if yes, no value needs to be passed). [optional]}
-                            {--uploads : Model has upload fields? (specify if yes, no value needs to be passed). [optional]}';
+                            {--uploads : Model has upload fields? (specify if yes, no value needs to be passed). [optional]}
+                            {--logable : Implements logging on table using Spatie/Activitylog (specify if yes, no value needs to be passed). [optional]}';
 
     /**
      * The console command description.
@@ -78,8 +79,10 @@ class MakeCrudModel extends GeneratorCommand
         }
         $stub = str_replace('{{table}}', $table, $stub);
 
+        $properties = [];
+
         if ($this->option('fillable')) {
-            $fillable_fields = explode(',', $this->option('fillable'));
+            $properties = $fillable_fields = explode(',', $this->option('fillable'));
             $fillable_fields = array_map(function($field) {
                 return "'$field'";
             }, $fillable_fields);
@@ -92,35 +95,60 @@ class MakeCrudModel extends GeneratorCommand
 
         if ($this->option('searchable')) {
             $searchable_fields = explode(',', $this->option('searchable'));
+            $properties = array_unique(array_merge($searchable_fields, $properties), SORT_REGULAR);
             if (count($searchable_fields) > 0) {
                 $searchable_fields = array_map(function($field) {
                     return PHP_EOL . "\t\t'$field' => 'string'";
                 }, $searchable_fields);
-                $stub = str_replace('{{searchable}}', implode(', ', $searchable_fields) . PHP_EOL . "\t", $stub);
+                $stub = str_replace('{{searchable}}', implode(', ', $searchable_fields) . ',' . PHP_EOL . "\t", $stub);
             }
         } else {
             $stub = str_replace('{{searchable}}', '', $stub);
         }
 
+        $propertiesReplace = '';
 
         if ($this->option('primaryKey')) {
             $primaryKey = $this->option('primaryKey');
             if (strstr($primaryKey, ',')) {
                 $primaryKey_fields = explode(',', $primaryKey);
-                $primaryKey_fields = array_map(function($key) {
+                $primaryKey_fields = array_map(function($key) use(&$propertiesReplace) {
+                    $propertiesReplace .= "* @property int $$key". PHP_EOL;
                     return "'$key'";
                 }, $primaryKey_fields);
                 $stub = str_replace('{{primaryKey}}', '[' . implode(', ', $primaryKey_fields) . ']', $stub);
             } else {
+                $propertiesReplace .= "* @property int $$primaryKey" . PHP_EOL;
                 $stub = str_replace('{{primaryKey}}', "'$primaryKey'", $stub);
             }
         } else {
+            $propertiesReplace .= '* @property int $id'. PHP_EOL;
             $stub = str_replace('{{primaryKey}}', '\'id\'', $stub);
         }
+
+        $propertiesReplace .= ' * @property mixed $' . implode(PHP_EOL . ' * @property mixed $', $properties);
 
         $softDeletes = $this->option('softDeletes');
         $stub = str_replace('{{softDeletes}}', $softDeletes ? 'use SoftDeletes;' : '', $stub);
         $stub = str_replace('{{useSoftDeletes}}', $softDeletes ? 'use Illuminate\Database\Eloquent\SoftDeletes;' : '', $stub);
+
+        // Timestamps
+        $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $created_at';
+        $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $updated_at';
+        if ($softDeletes) {
+            $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $deleted_at';
+        }
+
+        $stub = str_replace('{{properties}}', $propertiesReplace, $stub);
+
+        $logable = $this->option('logable');
+        if ($logable) {
+            $stub = str_replace('{{useLogable}}', 'use Thiagoprz\CrudTools\Models\Logable;', $stub);
+            $stub = str_replace('{{logable}}', 'use Logable;', $stub);
+        } else {
+            $stub = str_replace('{{useLogable}}', '', $stub);
+            $stub = str_replace('{{logable}}', '', $stub);
+        }
 
         if ($this->option('uploads')) {
             $upload  = <<<EOD
@@ -134,9 +162,9 @@ class MakeCrudModel extends GeneratorCommand
     public static function fileUploads(DummyClass \$model)
     {
         return [
-            /*'photo' => [
-                'path' => 'photos/' . str_slug(\$model->name) . '.jpg',
-            ],*/
+            //'photo' => [
+            //    'path' => 'photos/' . str_slug(\$model->name) . '.jpg',
+            //],
         ];
     }
 }
