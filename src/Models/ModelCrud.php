@@ -222,7 +222,7 @@ trait ModelCrud
                 $where->where($field, '>=', $value);
             }
             if (!empty($data[$field . '_to'])) {
-                $value = $data[$field . '_from'];
+                $value = $data[$field . '_to'];
                 if ($type == 'datetime' && strlen($value) < 16) { // If datetime was informed only by its date (Y-m-d instead of Y-m-d H:i:s)
                     $value .= ' 00:00:00';
                 }
