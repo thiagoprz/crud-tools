@@ -98,7 +98,7 @@ trait ModelCrud
      */
     public static function search($data)
     {
-        $query = self::whereNotNull('created_at');
+        $query = self::query();
         if (isset(self::$search_count)) {
             foreach (self::$search_count as $search_countable) {
                 $query->withCount($search_countable);
