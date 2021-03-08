@@ -197,6 +197,8 @@ trait ModelCrud
                             $query_where->orWhere($aliasField, $datum);
                         }
                     });
+                } elseif(strpos($data[$field], '!=') === 0) {
+                    $where->where($field, '!=', str_replace('!=', '', $data[$field]));
                 } else {
                     $where->where($field, $data[$field]);
                 }
