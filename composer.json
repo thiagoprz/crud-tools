@@ -2,6 +2,13 @@
     "name": "thiagoprz/crud-tools",
     "description": "Easy to use Laravel CRUD package with Controller, Model and Log system built in",
     "type": "library",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Thiagoprz\\CrudTools\\CrudToolsServiceProvider"
+            ]
+        }
+    },
     "autoload": {
         "classmap": [
             "src/"
