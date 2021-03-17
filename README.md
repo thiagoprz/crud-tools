@@ -15,7 +15,18 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 ## Installation
 Install through composer using: ``composer install thiagoprz\crud-tools``
 
-Publish Crud Tools service provider:
+If you don't have package auto discovery enabled add CrudToolsServiceProvider to your `config/app.php`:
+
+```
+... 
+'providers' => [
+    ...
+    \Thiagoprz\CrudTools\CrudToolsServiceProvider::class,
+],
+...
+```
+
+Publish Crud Tools service provider to allow stubs customization:
 
 `` php artisan vendor:publish --provider="Thiagoprz\CrudTools\CrudToolsServiceProvider"``
 
