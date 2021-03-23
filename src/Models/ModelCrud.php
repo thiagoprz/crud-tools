@@ -157,11 +157,13 @@ trait ModelCrud
             }
         }
 
-        if (isset($data['with_trashed']) && (!isset(self::$withTrashedForbidden) || !self::$withTrashedForbidden)) { // Brings excluded records also
+        // Showing all records including deleted (withTrashed)
+        if (isset($data['with_trashed']) && $data['with_trashed'] && (!isset(self::$withTrashedForbidden) || !self::$withTrashedForbidden)) { // Brings excluded records also
             $query->withTrashed();
         }
 
-        if (isset($data['only_trashed']) && (!isset(self::$onlyTrashedForbidden) || !self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
+        // Showing only deleted records  (onlyTrashed)
+        if (isset($data['only_trashed']) && $data['only_trashed'] && (!isset(self::$onlyTrashedForbidden) || !self::$onlyTrashedForbidden)) { // Brings only excluded records (deleted_at not null)
             $query->onlyTrashed();
         }
 
