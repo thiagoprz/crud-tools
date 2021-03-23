@@ -95,7 +95,7 @@ trait ControllerCrud
         }
         if ($request->ajax() || $request->wantsJson())
         {
-            return response()->json($model);
+            return $this->jsonModel($model);
         }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.added'));
@@ -123,9 +123,15 @@ trait ControllerCrud
         }
         if ($request->ajax() || $request->wantsJson())
         {
-            return response()->json(isset($this->modelClass::$resourceForSearch) ? new $this->modelClass::$resourceForSearch($model) : $model);
+            return $this->jsonModel($model);
         }
         return view($this->getViewPath() . '.show', !$this->disableLogs ? compact('model', 'logs') : compact('model'));
+    }
+
+    private function jsonModel($model)
+    {
+        $output = isset($this->modelClass::$resourceForSearch) ? new $this->modelClass::$resourceForSearch($model) : $model;
+        return response()->json($output);
     }
 
     /**
@@ -176,7 +182,7 @@ trait ControllerCrud
         $model->update($requestData);
         if ($request->ajax() || $request->wantsJson())
         {
-            return response()->json($model);
+            return $this->jsonModel($model);
         }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return redirect($url)->with('flash_message', trans('crud.updated'));
