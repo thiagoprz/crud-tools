@@ -158,14 +158,14 @@ trait ControllerCrud
     public function update(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $validation = Validator::make($request->all(), $this->modelClass::validateOn('update'));
+            $validation = Validator::make($request->all(), $this->modelClass::validateOn('update', $id));
             if ($validation->fails()) {
                 return response()->json([
                     'error' => true,'errors' => $validation->errors()->messages()
                 ], 419);
             }
         } else {
-            $this->validate($request, $this->modelClass::validateOn('update'));
+            $this->validate($request, $this->modelClass::validateOn('update', $id));
         }
         $requestData = $request->all();
         $model = $this->modelClass::findOrFail($id);

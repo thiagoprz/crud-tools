@@ -74,16 +74,17 @@ trait ModelCrud
     /**
      * Return the validations for the given scenario
      * @param string $scenario
+     * @param int $id
      * @return mixed
      */
-    public static function validateOn($scenario = 'create')
+    public static function validateOn($scenario = 'create', $id = null)
     {
         if (method_exists(self::class, 'validations')) { // Using validations through a method
             // Overrides update scenario to create just to allow leaving update blank avoiding unnecessary code
-            if ($scenario == 'update' && empty(self::validations($scenario))) {
+            if ($scenario == 'update' && empty(self::validations($scenario, $id))) {
                 $scenario = 'create';
             }
-            return self::validations($scenario);
+            return self::validations($scenario, $id);
         }
         if (isset(self::$validations)) {
             // Overrides update scenario to create just to allow leaving update blank avoiding unnecessary code
