@@ -78,16 +78,19 @@ trait ModelCrud
      */
     public static function validateOn($scenario = 'create')
     {
-        // Overrides update scenario to create just to allow leaving update blank avoiding unnecessary code
+        if (method_exists(self::class, 'validations')) { // Using validations through a method
+            // Overrides update scenario to create just to allow leaving update blank avoiding unnecessary code
+            if ($scenario == 'update' && empty(self::validations($scenario))) {
+                $scenario = 'create';
+            }
+            return self::validations($scenario);
+        }
         if (isset(self::$validations)) {
+            // Overrides update scenario to create just to allow leaving update blank avoiding unnecessary code
             if ($scenario == 'update' && empty(self::$validations['update'])) {
                 $scenario = 'create';
             }
             return self::$validations[$scenario];
-        }
-        if (method_exists(self::class, 'validations')) { // Using validations through a method
-            $validations = self::validations($scenario);
-            return $validations[$scenario];
         }
         return [];
     }
