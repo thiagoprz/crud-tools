@@ -137,6 +137,9 @@ class User extends Authenticatable
     ...
 }
 ```
+
+- Range searchable fields:
+
 Types available: int, string, date, datetime and decimal.
 
 You can use input filters using "_from" and "_to" suffix on date, datetime and decimal fields:
@@ -162,10 +165,36 @@ You can use input filters using "_from" and "_to" suffix on date, datetime and d
 | date      | Date fields | Yes |
 
 
+- Custom searchable field methods:
+
+In addition to use standard search based on type of fields you can add your on custom methods to customize search of specific fields. Create a method called "**searchField**" where Field is the name of the field with only first letter upper case.
+
+Example:
+
+```
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class Books extends Model
+{
+    ...
+    
+    /**
+     * Searching only by the start of the title of the book with LIKE
+     */
+    public static function searchTitle($query, $title)
+    {
+        $query->where('title', 'LIKE', "$title%");    
+    }
+
+}
+
+
+```
 
 - Sortable fields:
 
-You can defined the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable. 
+You can define the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable. 
 
 ```
 <?php

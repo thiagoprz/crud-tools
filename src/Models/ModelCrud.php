@@ -196,27 +196,34 @@ trait ModelCrud
             $aliasField = $field;
         }
         if (isset($data[$field]) && !is_null($data[$field])) {
-            if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
-                if (is_array($data[$field])) {
-                    $where->where(function($query_where) use($field, $data, $aliasField) {
-                        foreach ($data[$field] as $datum) {
-                            $query_where->orWhere($aliasField, $datum);
-                        }
-                    });
-                } elseif(strpos($data[$field], '!=') === 0) {
-                    $where->where($field, '!=', str_replace('!=', '', $data[$field]));
-                } else {
-                    $where->where($field, $data[$field]);
-                }
-            } else if ($type == 'string') { // Like Search
-                if (is_array($data[$field])) {
-                    $where->where(function($query_where) use($field, $data, $aliasField) {
-                        foreach ($data[$field] as $datum) {
-                            $query_where->orWhere($aliasField, 'LIKE', '%' . $datum . '%');
-                        }
-                    });
-                } else {
-                    $where->where($field, 'LIKE', '%' . $data[$field] . '%');
+            $customMethod = 'search' . ucfirst($field);
+            if (method_exists(self::class, $customMethod)) { // If field has custom "search" method uses it
+                $where->where(function($custom_query) use($field, $data, $customMethod) {
+                    self::$customMethod($custom_query, $data[$field]);
+                });
+            } else {
+                if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
+                    if (is_array($data[$field])) {
+                        $where->where(function($query_where) use($field, $data, $aliasField) {
+                            foreach ($data[$field] as $datum) {
+                                $query_where->orWhere($aliasField, $datum);
+                            }
+                        });
+                    } elseif(strpos($data[$field], '!=') === 0) {
+                        $where->where($field, '!=', str_replace('!=', '', $data[$field]));
+                    } else {
+                        $where->where($field, $data[$field]);
+                    }
+                } else if ($type == 'string') { // Like Search
+                    if (is_array($data[$field])) {
+                        $where->where(function($query_where) use($field, $data, $aliasField) {
+                            foreach ($data[$field] as $datum) {
+                                $query_where->orWhere($aliasField, 'LIKE', '%' . $datum . '%');
+                            }
+                        });
+                    } else {
+                        $where->where($field, 'LIKE', '%' . $data[$field] . '%');
+                    }
                 }
             }
         }
