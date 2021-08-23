@@ -194,8 +194,6 @@ trait ModelCrud
     {
         if (!$aliasField) {
             $aliasField = $field;
-        } else {
-            $field = $aliasField;
         }
         if (isset($data[$field]) && !is_null($data[$field])) {
             $customMethod = 'search' . ucfirst($field);
