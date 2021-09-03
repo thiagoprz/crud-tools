@@ -200,12 +200,20 @@ trait ControllerCrud
         if (isset($request->with_trashed) && !isset($this->modelClass::$withTrashedForbidden)) {
             $model = $this->modelClass::withTrashed()->findOrFail($id);
             if ($model->deleted_at) {
-                $model->forceDelete();
+                $count = $model->forceDelete();
             } else {
-                $this->modelClass::destroy($id);
+                $count = $this->modelClass::destroy($id);
             }
         } else {
-            $this->modelClass::destroy($id);
+            $count = $this->modelClass::destroy($id);
+        }
+        $url = !$request->input('url_return') ? $this->getViewPath(true) : $request->input('url_return');
+        if ($count < 1) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'error' => true, 'message' => __('No records were deleted')]);
+            } else {
+                return redirect($url);
+            }
         }
         $url = !$request->input('url_return') ? $this->getViewPath(true) : $request->input('url_return');
         if ($request->ajax() || $request->wantsJson())
