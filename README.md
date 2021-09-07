@@ -1,6 +1,10 @@
 # Laravel Crud Tools
 Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 
+
+[![Documentation Status](https://readthedocs.org/projects/laravel-crud-tools/badge/?version=latest)](https://laravel-crud-tools.readthedocs.io/en/latest/?badge=latest)
+
+
 ## Table of contents
 * [Installation](#installation)
 * [Usage](#usage)  
@@ -303,5 +307,5 @@ This project is being developed with the help of [Jetbrains](https://www.jetbrai
 
 ### Buy me a Coffee
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S4273NJ)
-[![buy-coffee](https://www.tecki.com.br/temp/bu-me-a-coffee.png)](https://www.buymeacoffee.com/thiagoprz)
+[![buy-coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-1.svg)](https://www.buymeacoffee.com/thiagoprz)
 
