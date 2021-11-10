@@ -5,6 +5,7 @@ namespace Thiagoprz\CrudTools\Models;
 /**
  * Trait Logable
  * @package Thiagoprz\EasyCrud\Models
+ * @extends \Illuminate\Database\Eloquent\Model
  */
 trait Logable
 {
@@ -37,11 +38,14 @@ trait Logable
     }
 
     /**
-     * @param $model
+     * @param \Illuminate\Database\Eloquent\Model $model
      */
     private static function getAttributesFiltered($model)
     {
         $attributes = $model->getOriginal();
+        if (empty($attributes)) { // may be empty on created() event
+            $attributes = $model->getAttributes();
+        }
         if (!empty($model->hidden)) {
             $hidden = $model->hidden;
             $attributes = array_filter($attributes, function($attr, $field) use($hidden) {
