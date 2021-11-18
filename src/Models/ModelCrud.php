@@ -149,6 +149,11 @@ trait ModelCrud
                 });
             }
         }
+
+        if (method_exists(self::class, 'searchOrder')) { // Allows custom method for RAW SQL orderBy
+            $query->orderByRaw(self::searchOrder());
+        }
+
         if (isset($data['order'])) {
             $orders = explode('|', $data['order']);
             foreach ($orders as $order) {
