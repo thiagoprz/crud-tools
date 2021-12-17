@@ -18,23 +18,29 @@ trait Logable
      */
     public static function bootLogable()
     {
+        static::created(function($model) {
+            self::registerActivity($model, self::getAttributesFiltered($model), 'log.created');
+        });
+        static::updated(function($model) {
+            self::registerActivity($model, self::getAttributesFiltered($model), 'log.updated');
+        });
+    }
+
+    /**
+     * @param $model
+     * @param $properties
+     * @param $log
+     * @return void
+     */
+    private static function registerActivity($model, $properties, $log)
+    {
         $user = \Illuminate\Support\Facades\Auth::user();
-        static::created(function($model) use($user) {
-            $class = strtolower(class_basename($model));
-            activity()
-                ->performedOn($model)
-                ->causedBy($user)
-                ->withProperties(self::getAttributesFiltered($model))
-                ->log(trans('log.created', ['model' => trans('entities.' . $class)]));
-        });
-        static::updated(function($model) use($user) {
-            $class = strtolower(class_basename($model));
-            activity()
-                ->performedOn($model)
-                ->causedBy($user)
-                ->withProperties(self::getAttributesFiltered($model))
-                ->log(trans('log.updated', ['model' => trans('entities.' . $class)]));
-        });
+        $class = strtolower(class_basename($model));
+        activity()
+            ->performedOn($model)
+            ->causedBy($user)
+            ->withProperties($properties)
+            ->log(trans($log, ['model' => trans('entities.' . $class)]));
     }
 
     /**
