@@ -10,6 +10,16 @@ use Illuminate\Support\Str;
  */
 class MakeCrudModel extends GeneratorCommand
 {
+    const PLACEHOLDER_PRIMARYKEY = '{{primaryKey}}';
+    const PLACEHOLDER_FILLABLE = '{{fillable}}';
+    const PLACEHOLDER_SEARCHABLE = '{{searchable}}';
+    const PLACEHOLDER_TABLE = '{{table}}';
+    const PLACEHOLDER_USE_LOGABLE = '{{useLogable}}';
+    const PLACEHOLDER_LOGABLE = '{{logable}}';
+    const PLACEHOLDER_PROPERTIES = '{{properties}}';
+    const PLACEHOLDER_SOFTDELETES = '{{softDeletes}}';
+    const PLACEHOLDER_USE_SOFTDELETES = '{{useSoftDeletes}}';
+
     /**
      * The name and signature of the console command.
      *
@@ -74,37 +84,15 @@ class MakeCrudModel extends GeneratorCommand
 
         $table = $this->option('table');
         if (!$table) {
-            $modelClass = explode('/', $this->argument('name'));
-            $table = Str::lower(Str::plural(last($modelClass)));
+            $table = $this->getTableName();
         }
-        $stub = str_replace('{{table}}', $table, $stub);
+        $stub = str_replace(self::PLACEHOLDER_TABLE, $table, $stub);
 
         $properties = [];
 
-        if ($this->option('fillable')) {
-            $properties = $fillable_fields = explode(',', $this->option('fillable'));
-            $fillable_fields = array_map(function($field) {
-                return "'$field'";
-            }, $fillable_fields);
-            if (count($fillable_fields) > 0) {
-                $stub = str_replace('{{fillable}}', implode(', ', $fillable_fields), $stub);
-            }
-        } else {
-            $stub = str_replace('{{fillable}}', '', $stub);
-        }
+        $this->buildFillable($stub, $properties);
 
-        if ($this->option('searchable')) {
-            $searchable_fields = explode(',', $this->option('searchable'));
-            $properties = array_unique(array_merge($searchable_fields, $properties), SORT_REGULAR);
-            if (count($searchable_fields) > 0) {
-                $searchable_fields = array_map(function($field) {
-                    return PHP_EOL . "\t\t'$field' => 'string'";
-                }, $searchable_fields);
-                $stub = str_replace('{{searchable}}', implode(', ', $searchable_fields) . ',' . PHP_EOL . "\t", $stub);
-            }
-        } else {
-            $stub = str_replace('{{searchable}}', '', $stub);
-        }
+        $this->buildSearchable($stub, $properties);
 
         $propertiesReplace = '';
 
@@ -116,21 +104,21 @@ class MakeCrudModel extends GeneratorCommand
                     $propertiesReplace .= "* @property int $$key". PHP_EOL;
                     return "'$key'";
                 }, $primaryKey_fields);
-                $stub = str_replace('{{primaryKey}}', '[' . implode(', ', $primaryKey_fields) . ']', $stub);
+                $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, '[' . implode(', ', $primaryKey_fields) . ']', $stub);
             } else {
                 $propertiesReplace .= "* @property int $$primaryKey" . PHP_EOL;
-                $stub = str_replace('{{primaryKey}}', "'$primaryKey'", $stub);
+                $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, "'$primaryKey'", $stub);
             }
         } else {
             $propertiesReplace .= '* @property int $id'. PHP_EOL;
-            $stub = str_replace('{{primaryKey}}', '\'id\'', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, '\'id\'', $stub);
         }
 
         $propertiesReplace .= ' * @property mixed $' . implode(PHP_EOL . ' * @property mixed $', $properties);
 
         $softDeletes = $this->option('softDeletes');
-        $stub = str_replace('{{softDeletes}}', $softDeletes ? 'use SoftDeletes;' : '', $stub);
-        $stub = str_replace('{{useSoftDeletes}}', $softDeletes ? 'use Illuminate\Database\Eloquent\SoftDeletes;' : '', $stub);
+        $stub = Str::replace(self::PLACEHOLDER_SOFTDELETES, $softDeletes ? 'use SoftDeletes;' : '', $stub);
+        $stub = Str::replace(self::PLACEHOLDER_USE_SOFTDELETES, $softDeletes ? 'use Illuminate\Database\Eloquent\SoftDeletes;' : '', $stub);
 
         // Timestamps
         $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $created_at';
@@ -139,17 +127,80 @@ class MakeCrudModel extends GeneratorCommand
             $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $deleted_at';
         }
 
-        $stub = str_replace('{{properties}}', $propertiesReplace, $stub);
+        $stub = Str::replace(self::PLACEHOLDER_PROPERTIES, $propertiesReplace, $stub);
 
-        $logable = $this->option('logable');
-        if ($logable) {
-            $stub = str_replace('{{useLogable}}', 'use Thiagoprz\CrudTools\Models\Logable;', $stub);
-            $stub = str_replace('{{logable}}', 'use Logable;', $stub);
+        $this->buildLogable($stub);
+
+        $this->buildUpload($stub);
+
+        $ret = $this->replaceNamespace($stub, $name);
+
+        return $ret->replaceClass($stub, $name);
+    }
+
+    /**
+     * @param string $stub
+     * @param array $properties
+     * @return void
+     */
+    private function buildFillable(string &$stub, array &$properties): void
+    {
+        if ($this->option('fillable')) {
+            $properties = $fillable_fields = explode(',', $this->option('fillable'));
+            $fillable_fields = array_map(function($field) {
+                return "'$field'";
+            }, $fillable_fields);
+            if (count($fillable_fields) > 0) {
+                $stub = Str::replace(self::PLACEHOLDER_FILLABLE, implode(', ', $fillable_fields), $stub);
+            }
         } else {
-            $stub = str_replace('{{useLogable}}', '', $stub);
-            $stub = str_replace('{{logable}}', '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_FILLABLE, '', $stub);
         }
+    }
 
+    /**
+     * @param string $stub
+     * @param array $properties
+     * @return void
+     */
+    private function buildSearchable(string &$stub, array &$properties): void
+    {
+        if ($this->option('searchable')) {
+            $searchable_fields = explode(',', $this->option('searchable'));
+            $properties = array_unique(array_merge($searchable_fields, $properties), SORT_REGULAR);
+            if (count($searchable_fields) > 0) {
+                $searchable_fields = array_map(function($field) {
+                    return PHP_EOL . "\t\t'$field' => 'string'";
+                }, $searchable_fields);
+                $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE, implode(', ', $searchable_fields) . ',' . PHP_EOL . "\t", $stub);
+            }
+        } else {
+            $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE, '', $stub);
+        }
+    }
+
+    /**
+     * @param string $stub
+     * @return void
+     */
+    private function buildLogable(string &$stub): void
+    {
+        if ($this->option('logable')) {
+            $stub = Str::replace(self::PLACEHOLDER_USE_LOGABLE, 'use Thiagoprz\CrudTools\Models\Logable;', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_LOGABLE, 'use Logable;', $stub);
+        } else {
+            $stub = Str::replace(self::PLACEHOLDER_USE_LOGABLE, '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_LOGABLE, '', $stub);
+        }
+    }
+
+    /**
+     * Builds upload part on stub
+     * @param string $stub
+     * @return void
+     */
+    private function buildUpload(string &$stub): void
+    {
         if ($this->option('uploads')) {
             $upload  = <<<EOD
 
@@ -162,21 +213,28 @@ class MakeCrudModel extends GeneratorCommand
     public static function fileUploads(DummyClass \$model)
     {
         return [
-            //'photo' => [
-            //    'path' => 'photos/' . str_slug(\$model->name) . '.jpg',
-            //],
+            // TODO: adjust according to your model file fields 
+            'photo' => [
+                'path' => "photos/\$model->id",
+                'name' => Str::slug(\$model->name) . '.jpg',
+            ],
         ];
     }
 }
 
 EOD;
             $lastSemicolon = strrpos($stub, ';');
-            $stub = substr_replace($stub, PHP_EOL . $upload, $lastSemicolon + 1);
+            $stub = Str::substrReplace($stub, PHP_EOL . $upload, $lastSemicolon + 1);
         }
+    }
 
-
-        $ret = $this->replaceNamespace($stub, $name);
-
-        return $ret->replaceClass($stub, $name);
+    /**
+     * @return string
+     */
+    private function getTableName(): string
+    {
+        $modelName = explode('/', $this->argument('name'));
+        $table = Str::snake($modelName);
+        return Str::lower(Str::plural($table));
     }
 }

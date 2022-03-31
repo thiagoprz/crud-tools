@@ -4,6 +4,7 @@ namespace DummyNamespace;
 
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Models\ModelCrud;
+use Illuminate\Support\Str;
 {{useSoftDeletes}}
 {{useLogable}}
 

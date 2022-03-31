@@ -8,8 +8,8 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 ## Table of contents
 * [Installation](#installation)
 * [Usage](#usage)  
-  - [CRUD Controller](#crud-controller)
   - [CRUD Model](#crud-model)
+  - [CRUD Controller](#crud-controller)|
 * [CRUD Generators](#crud-generators)
   - [Controller Generator](#controller-generator)
   - [Model Generator](#model-generator)
@@ -38,50 +38,6 @@ Publish Crud Tools service provider to allow stubs customization:
 
 ## Usage
 
-### CRUD Controller:
-A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
-
-The next step is to create a folder inside ``resources/views`` with the desired namespace or on root folder if the controller won't be using a specific namespace (admin on the example).
-```
-<?php
-
-namespace App\Http\Controllers\Admin;
-
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
-
-class UserController extends Controller
-{
-    use ControllerCrud;
-    public $modelClass = User::class;
-}
-```
-
-Views directory structure used by Controller CRUD based on the above example:
-
-Folder: 
-> views/admin/user
-
-Files:
-> create.blade.php
-
-> edit.blade.php 
-
-Available vars: $model (the model being updated) 
-
-> form.blade.php
-
-Available vars: $model (the model being updated - only on edit action)
-
-> index.blade.php
-
-Available vars: $items (the pagination object containing a filtered collection of the model)
-
-> show.blade.php
-
-Available vars: $model (the model being displayed)
 
 ### CRUD Model:
 
@@ -119,7 +75,7 @@ class User extends Authenticatable
 ```
 - Searchable fields:
 
-You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the ControllerCrud. 
+You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the ControllerCrud.
 
 ```
 <?php
@@ -198,7 +154,7 @@ class Books extends Model
 
 - Sortable fields:
 
-You can define the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable. 
+You can define the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable.
 
 ```
 <?php
@@ -224,7 +180,7 @@ class Books extends Model
 
 - Upload fields:
 
-You can create a fileUploads method to define which and where your uploadable fields will store the files: 
+You can create a fileUploads method to define which and where your uploadable fields will store the files:
 
 ```
 <?php
@@ -250,6 +206,53 @@ class User extends Authenticatable
     ...
 }
 ```
+
+
+
+### CRUD Controller:
+A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
+
+The next step is to create a folder inside ``resources/views`` with the desired namespace or on root folder if the controller won't be using a specific namespace (admin on the example).
+```
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
+
+class UserController extends Controller
+{
+    use ControllerCrud;
+    public $modelClass = User::class;
+}
+```
+
+Views directory structure used by Controller CRUD based on the above example:
+
+Folder: 
+> views/admin/user
+
+Files:
+> create.blade.php
+
+> edit.blade.php 
+
+Available vars: $model (the model being updated) 
+
+> form.blade.php
+
+Available vars: $model (the model being updated - only on edit action)
+
+> index.blade.php
+
+Available vars: $items (the pagination object containing a filtered collection of the model)
+
+> show.blade.php
+
+Available vars: $model (the model being displayed)
 
 ## CRUD Generators
 
