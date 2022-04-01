@@ -37,6 +37,6 @@ class CrudToolsServiceProvider extends ServiceProvider
             __DIR__ . '/config/crud-tools.php' => config_path('crud-tools.php'),
         ]);
         // Publishes any migrations necessary
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }

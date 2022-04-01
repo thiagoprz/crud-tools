@@ -30,7 +30,7 @@ trait ModelCrud
      * @param $query
      * @return void
      */
-    public function searchOrder(&$query)
+    public static function searchOrder(&$query)
     {
         if (isset(self::$search_order)) {
             foreach (self::$search_order as $field => $direction) {
@@ -74,7 +74,7 @@ trait ModelCrud
      * @param $query
      * @return void
      */
-    public function searchWithCount(&$query)
+    public static function searchWithCount(&$query)
     {
         if (isset(self::$search_count)) {
             foreach (self::$search_count as $search_countable) {
@@ -88,7 +88,7 @@ trait ModelCrud
      * @param $query
      * @return void
      */
-    public function searchWith(&$query)
+    public static function searchWith(&$query)
     {
         if (isset(self::$search_with)) {
             foreach (self::$search_with as $search_withable) {
@@ -102,7 +102,7 @@ trait ModelCrud
      * @param $query
      * @return mixed
      */
-    public function setSearchPagination($query)
+    public static function setSearchPagination($query)
     {
         $pagination = self::$paginationForSearch ?? 10;
         return $query->paginate($pagination);
@@ -114,7 +114,7 @@ trait ModelCrud
      * @param array $data
      * @return void
      */
-    public function applyWithTrashed($query, array $data)
+    public static function applyWithTrashed($query, array $data)
     {
         if (!self::$withTrashedForbidden && $data['with_trashed']) {
             $query->withTrashed();
@@ -127,7 +127,7 @@ trait ModelCrud
      * @param array $data
      * @return void
      */
-    public function applyOnlyTrashed($query, array $data)
+    public static function applyOnlyTrashed($query, array $data)
     {
         if (!self::$onlyTrashedForbidden && $data['only_trashed']) {
             $query->onlyTrashed();
@@ -136,14 +136,14 @@ trait ModelCrud
 
     /**
      * @param array $data
-     * @return array
+     * @return mixed
      */
-    public function search(array $data): array
+    public static function search(array $data)
     {
         // Starts query
         $query = self::query();
 
-        $searchableFields = !method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchable;
+        $searchableFields = method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchable;
         $query->where(function($where) use($data, $searchableFields) {
             foreach ($searchableFields as $field => $type) {
                 if (strstr($field, '.') !== false) {
@@ -153,8 +153,7 @@ trait ModelCrud
             }
         });
 
-        $searchableRelatedFields = !method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchableRelated;
-        foreach ($searchableRelatedFields as $field => $definiton) {
+        foreach ($searchableFields as $field => $definiton) {
             if (strstr($field, '.') === false) {
                 continue;
             }
@@ -185,7 +184,7 @@ trait ModelCrud
             self::applyWithTrashed($query);
         }
 
-        $result = !empty($data['no_pagination']) && !self::$noPaginationForbidden ? $query->get() : self::setSearchPagination($query);
+        $result = !empty($data['no_pagination']) && !isset(self::$noPaginationForbidden) ? $query->get() : self::setSearchPagination($query);
         if (!empty(self::$resourceForSearch)) {
             return self::$resourceForSearch::collection($result);
         }
@@ -297,7 +296,7 @@ trait ModelCrud
      * @param ModelCrudInterface|null $model
      * @return array
      */
-    public function fileUploads(ModelCrudInterface $model = null): array
+    public static function fileUploads(ModelCrudInterface $model = null): array
     {
         return [];
     }

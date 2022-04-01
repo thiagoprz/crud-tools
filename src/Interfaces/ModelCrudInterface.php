@@ -4,8 +4,8 @@ namespace Thiagoprz\CrudTools\Interfaces;
 
 interface ModelCrudInterface
 {
-    public static function validateOn($scenario = 'create', $id = null): array;
-    public static function validate($scenario = 'create', $id = null): array;
-    public static function fileUpload(self $model): void;
+    public static function validateOn(string $scenario = 'create', int $id = null): array;
+    public static function validations(int $id = null): array;
+    public static function fileUploads(self $model): array;
     public static function search(array $data);
 }

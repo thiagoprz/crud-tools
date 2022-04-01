@@ -20,7 +20,8 @@
     "autoload-dev": {
         "Thiagoprz\\CrudTools\\Tests\\": "tests",
         "classmap": [
-            "tests"
+            "tests",
+            "database"
         ]
     },
     "require": {
