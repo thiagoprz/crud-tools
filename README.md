@@ -9,7 +9,7 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 * [Installation](#installation)
 * [Usage](#usage)  
   - [CRUD Model](#crud-model)
-  - [CRUD Controller](#crud-controller)|
+  - [CRUD Controller](#crud-controller)
 * [CRUD Generators](#crud-generators)
   - [Controller Generator](#controller-generator)
   - [Model Generator](#model-generator)
@@ -17,7 +17,7 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 * [Support](#support)
 
 ## Installation
-Install through composer using: ``composer install thiagoprz\crud-tools``
+Install through composer using: ``composer install thiagoprz/crud-tools``
 
 If you don't have package auto discovery enabled add CrudToolsServiceProvider to your `config/app.php`:
 
