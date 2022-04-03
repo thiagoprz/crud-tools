@@ -1,15 +1,13 @@
 <?php
 
-namespace Unit\Models\ModelCrud;
+namespace Unit\Models\ModelCrud\Search\Pagination;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Thiagoprz\CrudTools\Models\Dummy;
-use Thiagoprz\CrudTools\Models\ModelCrud;
 use Thiagoprz\CrudTools\Tests\TestCase;
-use Throwable;
 
-class SearchTest extends TestCase
+class PaginationTest extends TestCase
 {
 
     /**

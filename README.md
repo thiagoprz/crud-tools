@@ -3,6 +3,7 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
 
 
 [![Documentation Status](https://readthedocs.org/projects/laravel-crud-tools/badge/?version=latest)](https://laravel-crud-tools.readthedocs.io/en/latest/?badge=latest)
+![Tests](https://github.com/thiagoprz/crud-tools/actions/workflows/tests.yml/badge.svg)
 
 
 ## Table of contents
@@ -11,8 +12,8 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
   - [CRUD Model](#crud-model)
   - [CRUD Controller](#crud-controller)
 * [CRUD Generators](#crud-generators)
-  - [Controller Generator](#controller-generator)
   - [Model Generator](#model-generator)
+  - [Controller Generator](#controller-generator)
 * [Enabling Logs](#enabling-logs)
 * [Support](#support)
 
