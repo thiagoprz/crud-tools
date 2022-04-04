@@ -26,11 +26,10 @@ interface ControllerCrudInterface
     public function destroy(Request $request, $id);
 
     /**
-     * @param Request $request
      * @param int|string $id
      * @return mixed
      */
-    public function edit(Request $request, $id);
+    public function edit($id);
 
     /**
      * @param Request $request
@@ -39,14 +38,13 @@ interface ControllerCrudInterface
     public function show(Request $request, $id);
 
     /**
-     * @param Request $request
      * @return mixed
      */
-    public function create(Request $request);
+    public function create();
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\Http\Resources\Json\JsonResource
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\JsonResponse
      */
     public function store(Request $request);
 
@@ -60,8 +58,8 @@ interface ControllerCrudInterface
 
     /**
      * @param Request $request
-     * @param ModelCrudInterface $model
+     * @param ModelCrudInterface|null $model
      * @return void
      */
-    public function handleFileUploads(Request $request, ModelCrudInterface $model): void;
+    public function handleFileUploads(Request $request, ModelCrudInterface $model = null): void;
 }

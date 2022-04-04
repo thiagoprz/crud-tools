@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Models;
 
@@ -26,20 +26,6 @@ trait ModelCrud
 {
 
     /**
-     * @see ModelCrud::$search_order
-     * @param $query
-     * @return void
-     */
-    public static function searchOrder(&$query)
-    {
-        if (isset(self::$search_order)) {
-            foreach (self::$search_order as $field => $direction) {
-                $query->orderBy($field, $direction);
-            }
-        }
-    }
-
-    /**
      * @see ModelCrud::$validations
      * @param int|null $id
      * @return array
@@ -47,8 +33,11 @@ trait ModelCrud
     public static function validations(int $id = null): array
     {
         $validations = self::$validations;
-        return array_map(function(string $rules) use($id) {
-            return Str::replace('$id', $id, $rules);
+        return array_map(function(array $rules) use($id) {
+            foreach ($rules as $scenario => $rule) {
+                $rules[$scenario] = Str::replace('$id', $id, $rule);
+            }
+            return $rules;
         }, $validations);
     }
 
@@ -66,6 +55,85 @@ trait ModelCrud
             $scenario = 'create';
         }
         return self::$validations[$scenario];
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public static function search(array $data)
+    {
+        // Starts query
+        $query = self::query();
+
+        $searchableFields = method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchable;
+        $query->where(function($where) use($data, $searchableFields) {
+            foreach ($searchableFields as $field => $type) {
+                if (strstr($field, '.') !== false) {
+                    continue;
+                }
+                self::buildQuery($where, $field, $type, $data);
+            }
+        });
+
+        foreach ($searchableFields as $field => $definiton) {
+            if (strstr($field, '.') === false) {
+                continue;
+            }
+            $arr = explode('.', $field);
+            $real_field = $arr[1];
+            $table = $arr[0];
+            $query->whereHas($table, function($where) use($data, $real_field, $definiton) {
+                self::buildQuery($where, $real_field, $definiton['type'], $data, $definiton['table'] . '.' . $real_field);
+            });
+        }
+
+        // Gets related records attached to
+        self::searchWith($query);
+
+        // Gets count result for related records attached to
+        self::searchWithCount($query);
+
+        // Defines "order by"
+        self::searchOrder($query, $data);
+
+        /**
+         * If model uses SoftDeletes allows query excluded records
+         * @see ModelCrud::$onlyTrashedForbidden
+         * @see ModelCrud::$withTrashedForbidden
+         */
+        if (in_array(SoftDeletes::class, class_uses(self::class), true)) {
+            self::applyOnlyTrashed($query);
+            self::applyWithTrashed($query);
+        }
+
+        $result = !empty($data['no_pagination']) && !isset(self::$noPaginationForbidden) ? $query->get() : self::setSearchPagination($query);
+        if (!empty(self::$resourceForSearch)) {
+            return self::$resourceForSearch::collection($result);
+        }
+        return $result;
+    }
+
+    /**
+     * @see ModelCrud::$search_order
+     * @param $query
+     * @param array $data
+     * @return void
+     */
+    public static function searchOrder(&$query, array $data)
+    {
+        if (isset($data['order'])) {
+            $sortFields = array_map(function($item) {
+                return explode(',', $item);
+            }, explode('|', $data['order']));
+            foreach ($sortFields as $sortField) {
+                $query->orderBy($sortField[0], $sortField[1] ?? 'ASC');
+            }
+        } else if (isset(self::$search_order)) {
+            foreach (self::$search_order as $field => $direction) {
+                $query->orderBy($field, $direction);
+            }
+        }
     }
 
     /**
@@ -132,63 +200,6 @@ trait ModelCrud
         if (!self::$onlyTrashedForbidden && $data['only_trashed']) {
             $query->onlyTrashed();
         }
-    }
-
-    /**
-     * @param array $data
-     * @return mixed
-     */
-    public static function search(array $data)
-    {
-        // Starts query
-        $query = self::query();
-
-        $searchableFields = method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchable;
-        $query->where(function($where) use($data, $searchableFields) {
-            foreach ($searchableFields as $field => $type) {
-                if (strstr($field, '.') !== false) {
-                    continue;
-                }
-                self::buildQuery($where, $field, $type, $data);
-            }
-        });
-
-        foreach ($searchableFields as $field => $definiton) {
-            if (strstr($field, '.') === false) {
-                continue;
-            }
-            $arr = explode('.', $field);
-            $real_field = $arr[1];
-            $table = $arr[0];
-            $query->whereHas($table, function($where) use($data, $real_field, $definiton) {
-                self::buildQuery($where, $real_field, $definiton['type'], $data, $definiton['table'] . '.' . $real_field);
-            });
-        }
-
-        // Gets related records attached to
-        self::searchWith($query);
-
-        // Gets count result for related records attached to
-        self::searchWithCount($query);
-
-        // Defines "order by"
-        self::searchOrder($query);
-
-        /**
-         * If model uses SoftDeletes allows query excluded records
-         * @see ModelCrud::$onlyTrashedForbidden
-         * @see ModelCrud::$withTrashedForbidden
-         */
-        if (in_array(SoftDeletes::class, class_uses(self::class), true)) {
-            self::applyOnlyTrashed($query);
-            self::applyWithTrashed($query);
-        }
-
-        $result = !empty($data['no_pagination']) && !isset(self::$noPaginationForbidden) ? $query->get() : self::setSearchPagination($query);
-        if (!empty(self::$resourceForSearch)) {
-            return self::$resourceForSearch::collection($result);
-        }
-        return $result;
     }
 
     /**

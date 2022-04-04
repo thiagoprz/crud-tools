@@ -4,7 +4,7 @@ namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use \Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +29,7 @@ trait ControllerCrud
      * @param $forRedirect
      * @return string
      */
-    public function getViewPath($forRedirect = false)
+    public function getViewPath($forRedirect = false): string
     {
         $ns_prefix = '';
         $ns_prefix_arr = explode('\\', (new \ReflectionObject($this))->getNamespaceName());
@@ -84,7 +84,7 @@ trait ControllerCrud
             if ($validation->fails()) {
                 return response()->json([
                     'error' => true,'errors' => $validation->errors()->messages()
-                ], 419);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } else {
             $this->validate($request, $this->modelClass::validateOn());
@@ -107,7 +107,7 @@ trait ControllerCrud
      * @param  mixed $id
      * @return \Illuminate\View\View
      */
-    public function show(Request $request, mixed $id)
+    public function show(Request $request, $id)
     {
         if (isset($request->with_trashed) && !isset($this->modelClass::$withTrashedForbidden)) {
             $model = $this->modelClass::withTrashed()->findOrFail($id);
@@ -131,10 +131,9 @@ trait ControllerCrud
      * Show the form for editing the specified resource.
      *
      * @param  mixed $id
-     *
      * @return \Illuminate\View\View
      */
-    public function edit(mixed $id)
+    public function edit($id)
     {
         $model = $this->modelClass::findOrFail($id);
         return view($this->getViewPath() . '.edit', compact('model'));
@@ -148,14 +147,14 @@ trait ControllerCrud
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(Request $request, mixed $id)
+    public function update(Request $request, $id)
     {
-        if ($this->isAjax()) {
+        if ($this->isAjax($request)) {
             $validation = Validator::make($request->all(), $this->modelClass::validateOn('update', $id));
             if ($validation->fails()) {
                 return response()->json([
                     'error' => true,'errors' => $validation->errors()->messages()
-                ], 419);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } else {
             $this->validate($request, $this->modelClass::validateOn('update', $id));
@@ -165,7 +164,7 @@ trait ControllerCrud
         $this->handleFileUploads($request, $model);
         $model->update($requestData);
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
-        return $this->isAjax() ? $this->jsonModel($model) : redirect($url)->with('flash_message', trans('crud.updated'));
+        return $this->isAjax($request) ? $this->jsonModel($model) : redirect($url)->with('flash_message', trans('crud.updated'));
     }
 
     /**
@@ -175,7 +174,7 @@ trait ControllerCrud
      * @param mixed $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request, mixed $id)
+    public function destroy(Request $request, $id)
     {
         if (isset($request->with_trashed) && property_exists($this->modelClass, 'withTrashedForbidden')) {
             $model = $this->modelClass::withTrashed()->findOrFail($id);
@@ -191,7 +190,7 @@ trait ControllerCrud
         $success = $count > 0;
         $error = !$success;
         $message = !$success ? __('No records were deleted') : __('crud.deleted');
-        return $this->isAjax() ? response()->json(compact('success', 'error', 'message')) : redirect($url)->with('flash_message', $message);
+        return $this->isAjax($request) ? response()->json(compact('success', 'error', 'message')) : redirect($url)->with('flash_message', $message);
     }
 
     /**
@@ -209,7 +208,7 @@ trait ControllerCrud
      * @param $model
      * @return JsonResponse
      */
-    private function jsonModel($model): JsonResource
+    private function jsonModel($model): JsonResponse
     {
         /** @var string $resourceForSearch */
         $output = isset($this->modelClass::$resourceForSearch) ? new $this->modelClass::$resourceForSearch($model) : $model;
@@ -218,10 +217,10 @@ trait ControllerCrud
 
     /**
      * @param Request $request
-     * @param mixed $model
+     * @param ModelCrudInterface|null $model
      * @return void
      */
-    private function handleFileUploads(Request $request, $model = null)
+    public function handleFileUploads(Request $request, $model = null): void
     {
         $file_uploads = $this->modelClass::fileUploads($model);
         foreach ($file_uploads as $file_upload => $file_data) {

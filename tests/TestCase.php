@@ -1,10 +1,7 @@
-<?php
+<?php declare(strict_types = 1);
+
 namespace Thiagoprz\CrudTools\Tests;
 
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Capsule\Manager as DB;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Thiagoprz\CrudTools\CrudToolsServiceProvider;
 
@@ -44,6 +41,10 @@ class TestCase extends OrchestraTestCase
         $database = require __DIR__ . '/config/database.php';
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', $database['sqlite']);
+        $app['config']->set('app.debug', true);
+        $app['config']->set('logging.default', 'daily');
+        $app['config']->set('logging.channels.daily.path', 'logs/testing.log');
+        touch(__DIR__ . '/../database/testing.sqlite');
         require_once __DIR__ . '/../database/migrations/create_dummy_table.php';
         (new \CreateDummyTable)->up();
     }

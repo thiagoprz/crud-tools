@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Thiagoprz\CrudTools\Models\Dummy;
+use Unit\Models\Dummy;
 
 class DummyFactory extends Factory
 {

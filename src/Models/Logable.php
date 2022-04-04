@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Models;
+
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Trait Logable
@@ -34,7 +36,7 @@ trait Logable
      */
     private static function registerActivity($model, $properties, $log)
     {
-        $user = \Illuminate\Support\Facades\Auth::user();
+        $user = Auth::user();
         $class = strtolower(class_basename($model));
         activity()
             ->performedOn($model)

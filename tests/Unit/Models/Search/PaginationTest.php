@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Unit\Models\ModelCrud\Search\Pagination;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Thiagoprz\CrudTools\Models\Dummy;
 use Thiagoprz\CrudTools\Tests\TestCase;
+use Unit\Models\Dummy;
 
 class PaginationTest extends TestCase
 {
@@ -16,7 +16,7 @@ class PaginationTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        Dummy::factory()->count(3)->make();
+        Dummy::factory()->count(10)->create();
     }
 
     /**
