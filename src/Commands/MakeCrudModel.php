@@ -137,6 +137,10 @@ class MakeCrudModel extends GeneratorCommand
 
         $ret = $this->replaceNamespace($stub, $name);
 
+        if ($this->option('migration')) {
+            $this->createMigration();
+        }
+
         return $ret->replaceClass($stub, $name);
     }
 
@@ -238,5 +242,24 @@ EOD;
         $modelName = explode('/', $this->argument('name'));
         $table = Str::snake($modelName);
         return Str::lower(Str::plural($table));
+    }
+
+    /**
+     * Create a migration file for the model.
+     *
+     * @return void
+     */
+    private function createMigration()
+    {
+        $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
+
+        if ($this->option('pivot')) {
+            $table = Str::singular($table);
+        }
+
+        $this->call('make:migration', [
+            'name' => "create_{$table}_table",
+            '--create' => $table,
+        ]);
     }
 }
