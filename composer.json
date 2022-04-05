@@ -21,7 +21,7 @@
         "Thiagoprz\\CrudTools\\Tests\\": "tests",
         "classmap": [
             "tests",
-            "database"
+            "database/tests"
         ]
     },
     "require": {

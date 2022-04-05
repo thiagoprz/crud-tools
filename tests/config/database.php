@@ -3,7 +3,7 @@
 return [
     'sqlite' => [
         'driver' => 'sqlite',
-        'database' => 'database/testing.sqlite',
+        'database' => 'database/tests/testing.sqlite',
         'prefix' => '',
     ],
 ];

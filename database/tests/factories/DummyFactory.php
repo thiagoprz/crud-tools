@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Tests\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Unit\Models\Dummy;

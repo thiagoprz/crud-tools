@@ -2,7 +2,7 @@
 
 namespace Unit\Models;
 
-use Database\Factories\DummyFactory;
+use Database\Tests\Factories\DummyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;

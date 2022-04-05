@@ -44,8 +44,8 @@ class TestCase extends OrchestraTestCase
         $app['config']->set('app.debug', true);
         $app['config']->set('logging.default', 'daily');
         $app['config']->set('logging.channels.daily.path', 'logs/testing.log');
-        touch(__DIR__ . '/../database/testing.sqlite');
-        require_once __DIR__ . '/../database/migrations/create_dummy_table.php';
+        touch(__DIR__ . '/../database/tests/testing.sqlite');
+        require_once __DIR__ . '/../database/tests/migrations/create_dummy_table.php';
         (new \CreateDummyTable)->up();
     }
 
