@@ -15,6 +15,7 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
   - [Model Generator](#model-generator)
   - [Controller Generator](#controller-generator)
 * [Enabling Logs](#enabling-logs)
+* [Customizing Routes and Resource Paths](#customizing-routes-and-resource-paths)
 * [Support](#support)
 
 ## Installation
@@ -50,7 +51,8 @@ For models you just need to add the trait ModelCrud and after that create a stat
 <?php
 ...
 use Thiagoprz\CrudTools\Models\ModelCrud;
-class User extends Authenticatable
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class User extends Authenticatable implements ModelCrudInterface
 {
     use ModelCrud;
     
@@ -161,7 +163,8 @@ You can define the fields that will be used as default sorting of your model on 
 <?php
 ...
 use Thiagoprz\CrudTools\Models\ModelCrud;
-class Books extends Model
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class Books extends Model implements ModelCrudInterface
 {
     use ModelCrud;
     /**
@@ -187,7 +190,8 @@ You can create a fileUploads method to define which and where your uploadable fi
 <?php
 ...
 use Thiagoprz\CrudTools\Models\ModelCrud;
-class User extends Authenticatable
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class User extends Authenticatable implements ModelCrudInterface
 {
     use ModelCrud;
     ...
@@ -219,13 +223,16 @@ The next step is to create a folder inside ``resources/views`` with the desired 
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
+use Thiagoprz\CrudTools\Interfaces\ControllerCrudInterface;
 
-class UserController extends Controller
+class UserController extends Controller implements ControllerCrudInterface
 {
+    use ValidatesRequests;
     use ControllerCrud;
     public $modelClass = User::class;
 }
@@ -297,6 +304,22 @@ Run migrations:
 ``php artisan migrate``
 
 For more information you can read Spatie Activity Log [Documentations](https://github.com/spatie/laravel-activitylog).
+
+
+## Customizing Routes and Resource Paths
+If you need to have different structure for resource directories besides the default `resources/{namespace/}modelname/` you can implement the method getViewPath on your controller and define it up manually: 
+
+```
+    /**
+     * @param $forRedirect
+     * @return string
+     */
+    public function getViewPath($forRedirect = false): string
+    {
+        return $forRedirect ? 'custom/url' : 'custom.path';
+    }
+```
+This method returns the path for routes and views, so you can customize the url and path for resources separatelly just using `$forRedirect` `true` for routes and `false` for resource directories.
 
 
 ## Support
