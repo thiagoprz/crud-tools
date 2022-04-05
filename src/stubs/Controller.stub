@@ -4,6 +4,7 @@ namespace DummyNamespace;
 
 use DummyRootNamespaceHttp\Controllers\Controller;
 use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
+use Thiagoprz\CrudTools\Interfaces\ControllerCrudInterface;
 use Illuminate\Http\Request;
 use {{modelNamespace}};
 
@@ -11,12 +12,13 @@ use {{modelNamespace}};
  * Class DummyClass
  * @package DummyNamespace
  */
-class DummyClass extends Controller
+class DummyClass extends Controller implements ControllerCrudInterface
 {
     use ControllerCrud;
 
     /**
      * CRUD model class
+     * @var {{modelName}}
      */
     public $modelClass = {{modelName}}::class;
 
