@@ -1,4 +1,5 @@
 <?php
+
 namespace Thiagoprz\CrudTools\Commands;
 
 use Illuminate\Console\GeneratorCommand;
@@ -100,8 +101,8 @@ class MakeCrudModel extends GeneratorCommand
             $primaryKey = $this->option('primaryKey');
             if (strstr($primaryKey, ',')) {
                 $primaryKey_fields = explode(',', $primaryKey);
-                $primaryKey_fields = array_map(function($key) use(&$propertiesReplace) {
-                    $propertiesReplace .= "* @property int $$key". PHP_EOL;
+                $primaryKey_fields = array_map(function ($key) use (&$propertiesReplace) {
+                    $propertiesReplace .= "* @property int $$key" . PHP_EOL;
                     return "'$key'";
                 }, $primaryKey_fields);
                 $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, '[' . implode(', ', $primaryKey_fields) . ']', $stub);
@@ -110,7 +111,7 @@ class MakeCrudModel extends GeneratorCommand
                 $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, "'$primaryKey'", $stub);
             }
         } else {
-            $propertiesReplace .= '* @property int $id'. PHP_EOL;
+            $propertiesReplace .= '* @property int $id' . PHP_EOL;
             $stub = Str::replace(self::PLACEHOLDER_PRIMARYKEY, '\'id\'', $stub);
         }
 
@@ -147,7 +148,7 @@ class MakeCrudModel extends GeneratorCommand
     {
         if ($this->option('fillable')) {
             $properties = $fillable_fields = explode(',', $this->option('fillable'));
-            $fillable_fields = array_map(function($field) {
+            $fillable_fields = array_map(function ($field) {
                 return "'$field'";
             }, $fillable_fields);
             if (count($fillable_fields) > 0) {
@@ -169,7 +170,7 @@ class MakeCrudModel extends GeneratorCommand
             $searchable_fields = explode(',', $this->option('searchable'));
             $properties = array_unique(array_merge($searchable_fields, $properties), SORT_REGULAR);
             if (count($searchable_fields) > 0) {
-                $searchable_fields = array_map(function($field) {
+                $searchable_fields = array_map(function ($field) {
                     return PHP_EOL . "\t\t'$field' => 'string'";
                 }, $searchable_fields);
                 $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE, implode(', ', $searchable_fields) . ',' . PHP_EOL . "\t", $stub);

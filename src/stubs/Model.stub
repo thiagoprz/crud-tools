@@ -5,6 +5,7 @@ namespace DummyNamespace;
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Models\ModelCrud;
 use Illuminate\Support\Str;
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
 {{useSoftDeletes}}
 {{useLogable}}
 
@@ -13,7 +14,7 @@ use Illuminate\Support\Str;
  * @package DummyNamespace
  {{properties}}
  */
-class DummyClass extends Model
+class DummyClass extends Model implements ModelCrudInterface
 {
     use ModelCrud;
     {{softDeletes}}

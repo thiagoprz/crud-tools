@@ -1,4 +1,5 @@
 <?php
+
 namespace Thiagoprz\CrudTools;
 
 use Illuminate\Support\ServiceProvider;
@@ -11,13 +12,14 @@ use Thiagoprz\CrudTools\Commands\MakeCrudModel;
  */
 class CrudToolsServiceProvider extends ServiceProvider
 {
-
     /**
      * Register package services
      *
      * @return void
      */
-    public function register() {}
+    public function register()
+    {
+    }
 
     /**
      * Boot package service provider

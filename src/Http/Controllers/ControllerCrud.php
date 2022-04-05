@@ -3,7 +3,7 @@
 namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use \Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Activitylog\Models\Activity;
@@ -17,7 +17,6 @@ use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
  */
 trait ControllerCrud
 {
-
     /**
      * Disabling logs if not needed
      *
@@ -49,8 +48,7 @@ trait ControllerCrud
     public function index(Request $request)
     {
         $items = $this->modelClass::search($request->all());
-        if ($request->ajax() || $request->wantsJson())
-        {
+        if ($request->ajax() || $request->wantsJson()) {
             if (property_exists($this->modelClass, 'resourceForSearch')) {
                 return $items;
             }
@@ -92,8 +90,7 @@ trait ControllerCrud
         $requestData = $request->all();
         $model = $this->modelClass::create($requestData);
         $this->handleFileUploads($request, $model);
-        if ($request->ajax() || $request->wantsJson())
-        {
+        if ($request->ajax() || $request->wantsJson()) {
             return $this->jsonModel($model);
         }
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
@@ -120,8 +117,7 @@ trait ControllerCrud
                 ->orderBy('created_at', 'DESC')
                 ->paginate(10);
         }
-        if ($request->ajax() || $request->wantsJson())
-        {
+        if ($request->ajax() || $request->wantsJson()) {
             return $this->jsonModel($model);
         }
         return view($this->getViewPath() . '.show', !$this->disableLogs ? compact('model', 'logs') : compact('model'));

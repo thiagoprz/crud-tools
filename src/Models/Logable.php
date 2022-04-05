@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Thiagoprz\CrudTools\Models;
 
@@ -11,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
  */
 trait Logable
 {
-
     /**
      * The "booting" method of the model.
      * Overrides events for "created", "updated"
@@ -20,10 +21,10 @@ trait Logable
      */
     public static function bootLogable()
     {
-        static::created(function($model) {
+        static::created(function ($model) {
             self::registerActivity($model, self::getAttributesFiltered($model), 'log.created');
         });
-        static::updated(function($model) {
+        static::updated(function ($model) {
             self::registerActivity($model, self::getAttributesFiltered($model), 'log.updated');
         });
     }
@@ -56,7 +57,7 @@ trait Logable
         }
         if (!empty($model->hidden)) {
             $hidden = $model->hidden;
-            $attributes = array_filter($attributes, function($attr, $field) use($hidden) {
+            $attributes = array_filter($attributes, function ($attr, $field) use ($hidden) {
                 return !in_array($field, $hidden);
             }, ARRAY_FILTER_USE_BOTH);
         }
@@ -67,5 +68,4 @@ trait Logable
     {
         // Empty method
     }
-
 }

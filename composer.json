@@ -26,7 +26,8 @@
     },
     "require": {
         "php": "^7.4 || ^8.0 || ^8.1",
-        "spatie/laravel-activitylog": "^3.1"
+        "spatie/laravel-activitylog": "^3.1",
+        "laravel/laravel": "8.*||9.*"
     },
     "license": "MIT",
     "authors": [
@@ -42,5 +43,9 @@
             "php artisan migrate",
             "php artisan vendor:publish --provider=\"Spatie\\Activitylog\\ActivitylogServiceProvider\" --tag=\"config\""
         ]
+    },
+    "require-dev": {
+        "orchestra/testbench": "6",
+        "squizlabs/php_codesniffer": "4.0.x-dev"
     }
 }

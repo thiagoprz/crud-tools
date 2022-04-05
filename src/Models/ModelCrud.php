@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Thiagoprz\CrudTools\Models;
 
@@ -24,7 +26,6 @@ use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
  */
 trait ModelCrud
 {
-
     /**
      * @see ModelCrud::$validations
      * @param int|null $id
@@ -33,7 +34,7 @@ trait ModelCrud
     public static function validations(int $id = null): array
     {
         $validations = self::$validations;
-        return array_map(function(array $rules) use($id) {
+        return array_map(function (array $rules) use ($id) {
             foreach ($rules as $scenario => $rule) {
                 $rules[$scenario] = Str::replace('$id', $id, $rule);
             }
@@ -67,7 +68,7 @@ trait ModelCrud
         $query = self::query();
 
         $searchableFields = method_exists(__CLASS__, 'searchable') ? self::searchable() : self::$searchable;
-        $query->where(function($where) use($data, $searchableFields) {
+        $query->where(function ($where) use ($data, $searchableFields) {
             foreach ($searchableFields as $field => $type) {
                 if (strstr($field, '.') !== false) {
                     continue;
@@ -83,7 +84,7 @@ trait ModelCrud
             $arr = explode('.', $field);
             $real_field = $arr[1];
             $table = $arr[0];
-            $query->whereHas($table, function($where) use($data, $real_field, $definiton) {
+            $query->whereHas($table, function ($where) use ($data, $real_field, $definiton) {
                 self::buildQuery($where, $real_field, $definiton['type'], $data, $definiton['table'] . '.' . $real_field);
             });
         }
@@ -123,13 +124,13 @@ trait ModelCrud
     public static function searchOrder(&$query, array $data)
     {
         if (isset($data['order'])) {
-            $sortFields = array_map(function($item) {
+            $sortFields = array_map(function ($item) {
                 return explode(',', $item);
             }, explode('|', $data['order']));
             foreach ($sortFields as $sortField) {
                 $query->orderBy($sortField[0], $sortField[1] ?? 'ASC');
             }
-        } else if (isset(self::$search_order)) {
+        } elseif (isset(self::$search_order)) {
             foreach (self::$search_order as $field => $direction) {
                 $query->orderBy($field, $direction);
             }
@@ -218,13 +219,13 @@ trait ModelCrud
         if (isset($data[$field]) && !is_null($data[$field])) {
             $customMethod = 'search' . ucfirst($field);
             if (method_exists(self::class, $customMethod)) { // If field has custom "search" method uses it
-                $where->where(function($custom_query) use($field, $data, $customMethod) {
+                $where->where(function ($custom_query) use ($field, $data, $customMethod) {
                     self::$customMethod($custom_query, $data[$field]);
                 });
             } else {
                 if ($type == 'string_match' || $type == 'date' || $type == 'datetime' || $type == 'int') { // Exact search
                     self::exactFilter($where, $field, $data, $aliasField);
-                } else if ($type == 'string') { // Like Search
+                } elseif ($type == 'string') { // Like Search
                     self::likeFilter($where, $field, $data, $aliasField);
                 }
             }
@@ -245,12 +246,12 @@ trait ModelCrud
     private static function exactFilter(&$where, $field, $data, $aliasField): void
     {
         if (is_array($data[$field])) {
-            $where->where(function($query_where) use($field, $data, $aliasField) {
+            $where->where(function ($query_where) use ($field, $data, $aliasField) {
                 foreach ($data[$field] as $datum) {
                     $query_where->orWhere($aliasField, $datum);
                 }
             });
-        } elseif(strpos($data[$field], '!=') === 0) {
+        } elseif (strpos($data[$field], '!=') === 0) {
             $where->where($field, '!=', str_replace('!=', '', $data[$field]));
         } else {
             $where->where($field, $data[$field]);
@@ -267,7 +268,7 @@ trait ModelCrud
     private static function likeFilter(&$where, $field, $data, $aliasField)
     {
         if (is_array($data[$field])) {
-            $where->where(function($query_where) use($field, $data, $aliasField) {
+            $where->where(function ($query_where) use ($field, $data, $aliasField) {
                 foreach ($data[$field] as $datum) {
                     $query_where->orWhere($aliasField, 'LIKE', '%' . $datum . '%');
                 }
