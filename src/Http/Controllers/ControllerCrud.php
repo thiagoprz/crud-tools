@@ -87,8 +87,9 @@ trait ControllerCrud
         } else {
             $this->validate($request, $this->modelClass::validateOn());
         }
-        $requestData = $request->all();
-        $model = $this->modelClass::create($requestData);
+        $model = new $this->modelClass();
+        $model->fill($request->only($model->getFillable()));
+        $model->save();
         $this->handleFileUploads($request, $model);
         if ($request->ajax() || $request->wantsJson()) {
             return $this->jsonModel($model);
@@ -155,10 +156,9 @@ trait ControllerCrud
         } else {
             $this->validate($request, $this->modelClass::validateOn('update', $id));
         }
-        $requestData = $request->all();
         $model = $this->modelClass::findOrFail($id);
         $this->handleFileUploads($request, $model);
-        $model->update($requestData);
+        $model->update($request->only($model->getFillable()));
         $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
         return $this->isAjax($request) ? $this->jsonModel($model) : redirect($url)->with('flash_message', trans('crud.updated'));
     }
