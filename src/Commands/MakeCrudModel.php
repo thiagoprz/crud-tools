@@ -35,7 +35,8 @@ class MakeCrudModel extends GeneratorCommand
                             {--searchable= : List of fields that will be present on search() method (separated by commas). [optional]}
                             {--softDeletes : Using soft deletes? (specify if yes, no value needs to be passed). [optional]}
                             {--uploads : Model has upload fields? (specify if yes, no value needs to be passed). [optional]}
-                            {--logable : Implements logging on table using Spatie/Activitylog (specify if yes, no value needs to be passed). [optional]}';
+                            {--logable : Implements logging on table using Spatie/Activitylog (specify if yes, no value needs to be passed). [optional]}
+                            {--m|migration : Generates migration }';
 
     /**
      * The console command description.
