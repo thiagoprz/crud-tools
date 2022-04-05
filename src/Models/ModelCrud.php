@@ -305,10 +305,10 @@ trait ModelCrud
     }
 
     /**
-     * @param ModelCrudInterface|null $model
+     * @param self $model
      * @return array
      */
-    public static function fileUploads(ModelCrudInterface $model = null): array
+    public static function fileUploads($model): array
     {
         return [];
     }
