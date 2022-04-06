@@ -264,20 +264,6 @@ Available vars: $model (the model being displayed)
 
 ## CRUD Generators
 
-### Controller Generator:
-
-You can create a standard Controller to work with a model by using the following command:
-
-``` php artisan make:crud-controller NAMESPACE1/NAMEController NAMESPACE2/Model ```
-
-> NAMESPACE1: Controller's namespace
->
-> NAMEController: is the name of the controller
->
-> NAMESPACE2: Model's namespace
->
-> Model: Name of the model
-
 ### Model Generator:
 To easily create a model with all Crud Tools enabled use:
 ```
@@ -292,7 +278,21 @@ php artisan make:crud-model NAMESPACE/Model
   - **--primaryKey**: field or comma separated fields that are the table's primary key
   - **--softDeletes**: if passed enables SoftDeletes trait on class
   - **--uploads**: if passed adds fileUploads() method on class 
-  - **--logable**: adds Logable trait on model  
+  - **--logable**: adds Logable trait on model
+
+### Controller Generator:
+
+You can create a standard Controller to work with a model by using the following command:
+
+``` php artisan make:crud-controller NAMESPACE1/NAMEController NAMESPACE2/Model ```
+
+> NAMESPACE1: Controller's namespace
+>
+> NAMEController: is the name of the controller
+>
+> NAMESPACE2: Model's namespace
+>
+> Model: Name of the model
 
 ## Enabling Logs
 To enable automatic logs on your models you need to publish Spatie Activity Logger migrations:
