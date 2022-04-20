@@ -16,6 +16,7 @@ Easy to use Laravel CRUD package with Controller, Model and Log system built in.
   - [Controller Generator](#controller-generator)
 * [Enabling Logs](#enabling-logs)
 * [Customizing Routes and Resource Paths](#customizing-routes-and-resource-paths)
+* [Contributing](#contributing)
 * [Support](#support)
 
 ## Installation
@@ -321,6 +322,9 @@ If you need to have different structure for resource directories besides the def
 ```
 This method returns the path for routes and views, so you can customize the url and path for resources separatelly just using `$forRedirect` `true` for routes and `false` for resource directories.
 
+
+## Contributing
+Check the [contributing](CONTRIBUTING.md) file to have a better understanding on how to contribute to the package.
 
 ## Support
 
