@@ -104,8 +104,8 @@ trait ModelCrud
          * @see ModelCrud::$withTrashedForbidden
          */
         if (in_array(SoftDeletes::class, class_uses(self::class), true)) {
-            self::applyOnlyTrashed($query);
-            self::applyWithTrashed($query);
+            self::applyOnlyTrashed($query, $data);
+            self::applyWithTrashed($query, $data);
         }
 
         $result = !empty($data['no_pagination']) && !isset(self::$noPaginationForbidden) ? $query->get() : self::setSearchPagination($query);
@@ -185,7 +185,7 @@ trait ModelCrud
      */
     public static function applyWithTrashed($query, array $data)
     {
-        if (!self::$withTrashedForbidden && $data['with_trashed']) {
+        if (!self::$withTrashedForbidden && !empty($data['with_trashed'])) {
             $query->withTrashed();
         }
     }
@@ -198,7 +198,7 @@ trait ModelCrud
      */
     public static function applyOnlyTrashed($query, array $data)
     {
-        if (!self::$onlyTrashedForbidden && $data['only_trashed']) {
+        if (!self::$onlyTrashedForbidden && !empty($data['only_trashed'])) {
             $query->onlyTrashed();
         }
     }
