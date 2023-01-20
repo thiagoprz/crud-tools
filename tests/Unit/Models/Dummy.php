@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\database\factories\DummyFactory;
 use Thiagoprz\CrudTools\Interfaces\UploadsInterface;
 use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
-use Thiagoprz\CrudTools\Models\ModelCrud;
+use Thiagoprz\CrudTools\Models\CrudModel;
 
 /**
  * @property int $id
@@ -18,7 +18,7 @@ use Thiagoprz\CrudTools\Models\ModelCrud;
  */
 class Dummy extends Model implements ValidatesInterface, UploadsInterface
 {
-    use ModelCrud, HasFactory;
+    use CrudModel, HasFactory;
 
     /**
      * Table name

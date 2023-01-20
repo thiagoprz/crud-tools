@@ -4,7 +4,7 @@ namespace Thiagoprz\CrudTools\Interfaces;
 
 use Illuminate\Http\Request;
 
-interface ControllerCrudInterface
+interface CrudControllerInterface
 {
     public function getViewPath(bool $forRedirect = false): string;
 
@@ -16,9 +16,6 @@ interface ControllerCrudInterface
 
     public function show(Request $request, $id);
 
-    /**
-     * @return mixed
-     */
     public function create();
 
     public function handleFileUploads(Request $request, ValidatesInterface $model = null): void;

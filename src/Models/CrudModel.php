@@ -22,12 +22,12 @@ use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
  * @property boolean $onlyTrashedForbidden onlyTrashed() gets forbidden on this class
  * @property boolean $noPaginationForbidden allow remove pagination forbidden on this class
  */
-trait ModelCrud
+trait CrudModel
 {
     /**
-     * @see ModelCrud::$validations
      * @param int|null $id
      * @return array
+     *@see CrudModel::$validations
      */
     public static function validations(int $id = null): array
     {
@@ -42,10 +42,10 @@ trait ModelCrud
 
     /**
      * Return the validations for the given scenario
-     * @see ModelCrud::$validations
      * @param string $scenario
      * @param int|null $id
      * @return mixed
+     *@see CrudModel::$validations
      */
     public static function validateOn(string $scenario = 'create', int $id = null): array
     {
@@ -98,8 +98,8 @@ trait ModelCrud
 
         /**
          * If model uses SoftDeletes allows query excluded records
-         * @see ModelCrud::$onlyTrashedForbidden
-         * @see ModelCrud::$withTrashedForbidden
+         * @see CrudModel::$onlyTrashedForbidden
+         * @see CrudModel::$withTrashedForbidden
          */
         if (in_array(SoftDeletes::class, class_uses(self::class), true)) {
             self::applyOnlyTrashed($query, $data);
@@ -114,10 +114,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$search_order
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$search_order
      */
     public static function searchOrder(&$query, array $data)
     {
@@ -137,9 +137,9 @@ trait ModelCrud
 
     /**
      * Attaches related records to every result on the search query
-     * @see ModelCrud::$search_count
      * @param $query
      * @return void
+     *@see CrudModel::$search_count
      */
     public static function searchWithCount(&$query)
     {
@@ -151,9 +151,9 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$search_with
      * @param $query
      * @return void
+     *@see CrudModel::$search_with
      */
     public static function searchWith(&$query)
     {
@@ -165,9 +165,9 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$paginationForSearch
      * @param $query
      * @return mixed
+     *@see CrudModel::$paginationForSearch
      */
     public static function setSearchPagination($query)
     {
@@ -176,10 +176,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$withTrashedForbidden
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$withTrashedForbidden
      */
     public static function applyWithTrashed($query, array $data)
     {
@@ -189,10 +189,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$onlyTrashedForbidden
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$onlyTrashedForbidden
      */
     public static function applyOnlyTrashed($query, array $data)
     {

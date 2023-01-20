@@ -14,7 +14,7 @@ use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
  * @package Thiagoprz\EasyCrud\Http\Controllers
  * @property ValidatesInterface|SearchInterface $modelClass
  */
-trait ControllerCrud
+trait CrudController
 {
     /**
      * Disabling logs if not needed

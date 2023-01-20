@@ -73,6 +73,6 @@ Please follow these steps to have your contribution considered by the maintainer
 1. Fork the repository
 2. Create a branch with the specific feature, bug or refactor needed
 3. Check if Github Actions are working and the tests are passing on Your PR
-4. Create a PR for the develop branch on this repository
+4. Only create PR (pull requests) for the **dev** branch on this repository
 
 While the prerequisites above must be satisfied prior to having your pull request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
