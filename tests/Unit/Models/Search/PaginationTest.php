@@ -25,7 +25,8 @@ class PaginationTest extends TestCase
      */
     public function test_search_with_pagination_success(): void
     {
-        $paginatedCollection = Dummy::search([]);
+        $dummy = new Dummy();
+        $paginatedCollection = $dummy->search([]);
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginatedCollection);
         $this->assertNotInstanceOf(Collection::class, $paginatedCollection);
     }
@@ -36,7 +37,8 @@ class PaginationTest extends TestCase
      */
     public function test_search_with_no_pagination_success(): void
     {
-        $collection = Dummy::search([
+        $dummy = new Dummy();
+        $collection = $dummy->search([
             'no_pagination' => 1,
         ]);
         $this->assertInstanceOf(Collection::class, $collection);

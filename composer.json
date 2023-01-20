@@ -21,11 +21,11 @@
         "Thiagoprz\\CrudTools\\Tests\\": "tests",
         "classmap": [
             "tests",
-            "database/tests"
+            "database"
         ]
     },
     "require": {
-        "php": "^7.4 || ^8.0 || ^8.1",
+        "php": "^8.0 || ^8.1 || ^8.2",
         "spatie/laravel-activitylog": "^3.1",
         "laravel/framework": "8.*||9.*"
     },

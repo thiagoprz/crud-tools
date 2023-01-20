@@ -1,11 +1,14 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace DummyNamespace;
 
 use DummyRootNamespaceHttp\Controllers\Controller;
-use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
-use Thiagoprz\CrudTools\Interfaces\ControllerCrudInterface;
+use Thiagoprz\CrudTools\Http\Controllers\CrudController;
+use Thiagoprz\CrudTools\Interfaces\CrudControllerInterface;
+use Thiagoprz\CrudTools\Interfaces\CrudRequestInterface;
 use Illuminate\Http\Request;
+use App\Http\Requests\{{modelName}}CreateRequest;
+use App\Http\Requests\{{modelName}}UpdateRequest;
 use {{modelNamespace}};
 
 /**
@@ -14,7 +17,7 @@ use {{modelNamespace}};
  */
 class DummyClass extends Controller implements ControllerCrudInterface
 {
-    use ControllerCrud;
+    use CrudController;
 
     /**
      * CRUD model class
@@ -23,12 +26,56 @@ class DummyClass extends Controller implements ControllerCrudInterface
     public $modelClass = {{modelName}}::class;
 
     /**
+     * CRUD model class
+     * @var {{modelName}}
+     */
+    protected $model;
+
+    /**
      * Controller constructor
      */
-    public function __construct()
+    public function __construct({{modelName}} $model)
     {
-        // Uncomment if you are not using the Logable trait on the model class
-        //$this->disableLogs = true;
+        $this->model = $model;
+        // Comment if you are going to use the Logable trait on the model class
+        $this->disableLogs = true;
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param {{modelName}}CreateRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function store({{modelName}}CreateRequest $request)
+    {
+        $model = new {{modelName}}();
+        $model->fill($request->only($model->getFillable()));
+        $model->save();
+        $this->handleFileUploads($request, $model);
+        if ($this->isAjax($request)) {
+            return $this->jsonModel($model);
+        }
+        $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
+        return redirect($url)->with('flash_message', trans('crud.added'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param {{modelName}}UpdateRequest $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function update({{modelName}}UpdateRequest $request, int $id)
+    {
+        $model = {{modelName}}::findOrFail($id);
+        $this->handleFileUploads($request, $model);
+        $model->update($request->only($model->getFillable()));
+        if ($this->isAjax($request)) {
+            return $this->jsonModel($model);
+        }
+        $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
+        return redirect($url)->with('flash_message', trans('crud.updated'));
+    }
 }

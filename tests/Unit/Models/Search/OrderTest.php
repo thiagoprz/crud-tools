@@ -32,7 +32,8 @@ class OrderTest extends TestCase
         $requestData = [
             'order' => 'id,DESC',
         ];
-        $paginatedCollection = Dummy::search($requestData);
+        $dummy = new Dummy();
+        $paginatedCollection = $dummy->search($requestData);
         $this->assertNotEquals($this->collection[0], $paginatedCollection[0]);
         $lastItem = Dummy::orderBy('id', 'DESC')->first();
         $this->assertEquals($lastItem->getAttributes(), $paginatedCollection->items()[0]->getAttributes());

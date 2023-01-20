@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Tests\Factories;
+namespace Thiagoprz\CrudTools\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Unit\Models\Dummy;

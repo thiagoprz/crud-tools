@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Interfaces;
 
-interface ModelCrudInterface
+interface ValidatesInterface
 {
     public static function validateOn(string $scenario = 'create', int $id = null): array;
     public static function validations(int $id = null): array;
-    public static function fileUploads($model): array;
-    public static function search(array $data);
 }

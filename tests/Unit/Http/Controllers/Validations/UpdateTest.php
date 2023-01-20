@@ -58,7 +58,7 @@ class UpdateTest extends TestCase
         $resource = $response->json();
         $requiredMessage = 'The :field field is required.';
         $this->assertEquals([
-            'error' => true,
+            'message' => 'The given data was invalid.',
             'errors' => [
                 'name' => [
                     Str::replace(':field', 'name', $requiredMessage),

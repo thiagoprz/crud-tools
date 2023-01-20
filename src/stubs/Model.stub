@@ -1,20 +1,22 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace DummyNamespace;
 
 use Illuminate\Database\Eloquent\Model;
 use Thiagoprz\CrudTools\Models\ModelCrud;
 use Illuminate\Support\Str;
-use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+use Thiagoprz\CrudTools\Interfaces\SearchInterface;
+use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
 {{useSoftDeletes}}
 {{useLogable}}
+{{useUploads}}
 
 /**
  * Class DummyClass
  * @package DummyNamespace
  {{properties}}
  */
-class DummyClass extends Model implements ModelCrudInterface
+class DummyClass extends Model implements SearchInterface, ValidatesInterface{{uploadInterface}}
 {
     use ModelCrud;
     {{softDeletes}}

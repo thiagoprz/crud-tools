@@ -1,21 +1,20 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Storage;
-use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+use Thiagoprz\CrudTools\Interfaces\SearchInterface;
+use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
 
 /**
  * Trait ControllerCrud
  * @package Thiagoprz\EasyCrud\Http\Controllers
- * @property ModelCrudInterface $modelClass
+ * @property ValidatesInterface|SearchInterface $modelClass
  */
-trait ControllerCrud
+trait CrudController
 {
     /**
      * Disabling logs if not needed
@@ -30,13 +29,13 @@ trait ControllerCrud
      */
     public function getViewPath($forRedirect = false): string
     {
-        $ns_prefix = '';
-        $ns_prefix_arr = explode('\\', (new \ReflectionObject($this))->getNamespaceName());
-        if (end($ns_prefix_arr) != 'Controllers') {
-            $ns_prefix = strtolower(end($ns_prefix_arr)) . ($forRedirect ? '/' : '.');
+        $nsPrefix = '';
+        $nsPrefixArr = explode('\\', (new \ReflectionObject($this))->getNamespaceName());
+        if (end($nsPrefixArr) != 'Controllers') {
+            $nsPrefix = strtolower(end($nsPrefixArr)) . ($forRedirect ? '/' : '.');
         }
-        $model_name_arr = explode('\\', $this->modelClass);
-        return $ns_prefix . strtolower(end($model_name_arr));
+        $modelNameArr = explode('\\', $this->modelClass);
+        return $nsPrefix . strtolower(end($modelNameArr));
     }
 
     /**
@@ -47,7 +46,7 @@ trait ControllerCrud
      */
     public function index(Request $request)
     {
-        $items = $this->modelClass::search($request->all());
+        $items = $this->model->search($request->all());
         if ($request->ajax() || $request->wantsJson()) {
             if (property_exists($this->modelClass, 'resourceForSearch')) {
                 return $items;
@@ -66,36 +65,6 @@ trait ControllerCrud
     public function create()
     {
         return view($this->getViewPath() . '.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function store(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $validation = Validator::make($request->all(), $this->modelClass::validateOn());
-            if ($validation->fails()) {
-                return response()->json([
-                    'error' => true,'errors' => $validation->errors()->messages()
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-        } else {
-            $this->validate($request, $this->modelClass::validateOn());
-        }
-        $model = new $this->modelClass();
-        $model->fill($request->only($model->getFillable()));
-        $model->save();
-        $this->handleFileUploads($request, $model);
-        if ($request->ajax() || $request->wantsJson()) {
-            return $this->jsonModel($model);
-        }
-        $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
-        return redirect($url)->with('flash_message', trans('crud.added'));
     }
 
     /**
@@ -137,33 +106,6 @@ trait ControllerCrud
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param  mixed $id
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function update(Request $request, $id)
-    {
-        if ($this->isAjax($request)) {
-            $validation = Validator::make($request->all(), $this->modelClass::validateOn('update', $id));
-            if ($validation->fails()) {
-                return response()->json([
-                    'error' => true,'errors' => $validation->errors()->messages()
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-        } else {
-            $this->validate($request, $this->modelClass::validateOn('update', $id));
-        }
-        $model = $this->modelClass::findOrFail($id);
-        $this->handleFileUploads($request, $model);
-        $model->update($request->only($model->getFillable()));
-        $url = !$request->input('url_return') ? $this->getViewPath(true) . '/' . $model->id : $request->input('url_return');
-        return $this->isAjax($request) ? $this->jsonModel($model) : redirect($url)->with('flash_message', trans('crud.updated'));
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param Request $request
@@ -186,7 +128,9 @@ trait ControllerCrud
         $success = $count > 0;
         $error = !$success;
         $message = !$success ? __('No records were deleted') : __('crud.deleted');
-        return $this->isAjax($request) ? response()->json(compact('success', 'error', 'message')) : redirect($url)->with('flash_message', $message);
+        return $this->isAjax($request)
+            ? response()->json(compact('success', 'error', 'message'))
+            : redirect($url)->with('flash_message', $message);
     }
 
     /**
@@ -207,24 +151,34 @@ trait ControllerCrud
     private function jsonModel($model): JsonResponse
     {
         /** @var string $resourceForSearch */
-        $output = isset($this->modelClass::$resourceForSearch) ? new $this->modelClass::$resourceForSearch($model) : $model;
+        $output = isset($this->modelClass::$resourceForSearch)
+            ? new $this->modelClass::$resourceForSearch($model)
+            : $model;
         return response()->json($output);
     }
 
     /**
      * @param Request $request
-     * @param ModelCrudInterface|null $model
+     * @param ValidatesInterface|null $model
      * @return void
      */
     public function handleFileUploads(Request $request, $model = null): void
     {
-        $file_uploads = $this->modelClass::fileUploads($model);
-        foreach ($file_uploads as $file_upload => $file_data) {
+        $uploads = [];
+        $fileUploads = $model->fileUploads();
+        foreach ($fileUploads as $file_upload => $file_data) {
             if ($request->hasFile($file_upload)) {
                 $file = $request->file($file_upload);
-                $upload = Storage::putFileAs($file_data['path'], $file, !isset($file_data['name']) ? $file->getClientOriginalName() : $file_data['name']);
-                $requestData[$file_upload] = $upload;
+                $upload = Storage::putFileAs(
+                    $file_data['path'],
+                    $file,
+                    !isset($file_data['name']) ? $file->getClientOriginalName() : $file_data['name']
+                );
+                $uploads[$file_upload] = $upload;
             }
+        }
+        if (!empty($uploads)) {
+            $model->update($uploads);
         }
     }
 }

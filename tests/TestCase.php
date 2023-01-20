@@ -4,6 +4,7 @@ namespace Thiagoprz\CrudTools\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Thiagoprz\CrudTools\CrudToolsServiceProvider;
+use Thiagoprz\CrudTools\Tests\database\migrations\CreateDummyTable;
 
 
 /**
@@ -45,8 +46,8 @@ class TestCase extends OrchestraTestCase
         $app['config']->set('logging.default', 'daily');
         $app['config']->set('logging.channels.daily.path', 'logs/testing.log');
         touch(__DIR__ . '/../database/tests/testing.sqlite');
-        require_once __DIR__ . '/../database/tests/migrations/create_dummy_table.php';
-        (new \CreateDummyTable)->up();
+        require_once __DIR__ . '/database/migrations/create_dummy_table.php';
+        (new CreateDummyTable)->up();
     }
 
     /**
@@ -54,6 +55,7 @@ class TestCase extends OrchestraTestCase
      */
     public function tearDown(): void
     {
-        (new \CreateDummyTable)->down();
+        (new CreateDummyTable)->down();
+        touch(__DIR__ . '/../database/tests/testing.sqlite');
     }
 }

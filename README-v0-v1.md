@@ -1,26 +1,19 @@
-# Laravel Crud Tools
+# Laravel Crud Tools (versions 0.x.x and 1.x.x)
 Easy to use Laravel CRUD package with Controller, Model and Log system built in.
+
 
 [![Documentation Status](https://readthedocs.org/projects/laravel-crud-tools/badge/?version=latest)](https://laravel-crud-tools.readthedocs.io/en/latest/?badge=latest)
 [![Dev](https://github.com/thiagoprz/crud-tools/actions/workflows/dev.yml/badge.svg?branch=dev)](https://github.com/thiagoprz/crud-tools/actions/workflows/dev.yml)
 [![Master](https://github.com/thiagoprz/crud-tools/actions/workflows/master.yml/badge.svg?branch=master)](https://github.com/thiagoprz/crud-tools/actions/workflows/master.yml)
-
-> For older versions please see [README-v0-v1.md](https://github.com/thiagoprz/crud-tools/blob/master/README-v0-v1.md)
 
 ## Table of contents
 * [Installation](#installation)
 * [Usage](#usage)  
   - [CRUD Model](#crud-model)
   - [CRUD Controller](#crud-controller)
-* [Code Generators Available](#code-generators-available)
+* [CRUD Generators](#crud-generators)
   - [Model Generator](#model-generator)
   - [Controller Generator](#controller-generator)
-* [CrudModel helpers and features](#crudmodel-helpers-and-features)
-  - [Validations](#validations)
-  - [Searchable fields](#searchable-fields)
-  - [Range searchable fields](#range-searchable-fields)
-  - [Sortable fields](#sortable-fields)
-  - [Upload fields](#upload-fields)
 * [Enabling Logs](#enabling-logs)
 * [Customizing Routes and Resource Paths](#customizing-routes-and-resource-paths)
 * [Contributing](#contributing)
@@ -40,66 +33,29 @@ If you don't have package auto discovery enabled add CrudToolsServiceProvider to
 ...
 ```
 
-Publish Crud Tools service provider to allow stubs customization: `php artisan vendor:publish --provider="Thiagoprz\CrudTools\CrudToolsServiceProvider"`, this will create a crud-tools.php file inside your PROJECT_ROOT_FOLDER/config directory.
+Publish Crud Tools service provider to allow stubs customization:
+
+`` php artisan vendor:publish --provider="Thiagoprz\CrudTools\CrudToolsServiceProvider"``
 
 
 
 ## Usage
 
-This package comes with 3 new generator commands enabled for fast implementation of your CRUD needs.
+
+### CRUD Model:
+
+For models you just need to add the trait ModelCrud and after that create a static property declaring model's validations (based on the create, update and/or delete scenarios), default order, filtering rules, upload file rules, define resources, and with / countable relationships.
 
 
-### Code Generators Available
-
-### Model Generator
-Generates a model extending that implements `SearchInterface` and `ValidatesInterface`, and optionally `UploadsInterface`.
+- Validations:
 ```
-php artisan make:crud-model {Namespace}/{Model} --fillable={...} --searchable={...}
-```
-> {Namespace}: Model's namespace (inside App namespace, eg: Models/User)
-> {Model}: Name of the model - in case of databases use the singular form for it (eg: table users becomes model User)
-
-- Available options
-  - **--fillable**: comma separated fields for fillable attributes
-  - **--searchable**: comma separated fields for searchable attributes (based on search() method)
-  - **--primaryKey**: field or comma separated fields that are the table's primary key [Optional]
-  - **--softDeletes**: if informed enables SoftDeletes trait on class [Optional]
-  - **--uploads**: if informed adds the model will implement UploadsInterface [Optional]
-  - **--logable**: adds Logable trait on model (see [enabling logs](#enabling-logs) section) [Optional]
-
-### Controller Generator
-
-You can create a standard Controller to work with a model by using the following command:
-
-``` php artisan make:crud-controller {NAMESPACE1}/{NAMEController} {NAMESPACE2}/{Model} ```
-
-> {NAMESPACE1}: Controller's namespace
->
-> {NAMEController}: is the name of the controller
->
-> {NAMESPACE2}: Model's namespace
->
-> {Model}: Name of the model
-
-
-## CrudModel helpers and features
-
-For models you just need to add the trait CrudModel and after that create a static property declaring model's validations (based on the create, update and/or delete scenarios), default order, filtering rules, upload file rules, define resources, and with / countable relationships.
-
-
-### Validations:
-```
-<?php declare(strict_types = 1);
-
-namespace App\Models;
-
-use Thiagoprz\CrudTools\Models\CrudModel;
-use Thiagoprz\CrudTools\Interfaces\SearchInterface;
-use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
-
-class User extends Authenticatable Model implements SearchInterface, ValidatesInterface
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class User extends Authenticatable implements ModelCrudInterface
 {
-    use CrudModel;
+    use ModelCrud;
     
     /**
      * Model validations
@@ -121,22 +77,17 @@ class User extends Authenticatable Model implements SearchInterface, ValidatesIn
     ...
 }
 ```
-### Searchable fields:
+- Searchable fields:
 
-You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the CrudController.
+You can create a $searchable property that will hold fields allowed to be searched on the static method **search()** - very useful with the ControllerCrud.
 
 ```
-<?php declare(strict_types = 1);
-
-namespace App\Models;
-
-use Thiagoprz\CrudTools\Models\CrudModel;
-use Thiagoprz\CrudTools\Interfaces\SearchInterface;
-
-class User extends Authenticatable Model implements SearchInterface
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class User extends Authenticatable
 {
-    use CrudModel;
-
+    use ModelCrud;
     /**
      * Fields that can be searched by (static)method search()
      *
@@ -147,10 +98,11 @@ class User extends Authenticatable Model implements SearchInterface
         'name' => 'string',
         'created_at' => 'datetime',
     ];
+    ...
 }
 ```
 
-### Range searchable fields:
+- Range searchable fields:
 
 Types available: int, string, date, datetime and decimal.
 
@@ -177,22 +129,19 @@ You can use input filters using "_from" and "_to" suffix on date, datetime and d
 | date      | Date fields | Yes |
 
 
-### Custom searchable field methods:
+- Custom searchable field methods:
 
 In addition to use standard search based on type of fields you can add your on custom methods to customize search of specific fields. Create a method called "**searchField**" where Field is the name of the field with only first letter upper case.
 
 Example:
 
 ```
-<?php declare(strict_types = 1);
-
-namespace App\Models;
-
-use Thiagoprz\CrudTools\Models\CrudModel;
-
-class Books extends Model implements 
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+class Books extends Model
 {
-    use CrudModel;
+    ...
     
     /**
      * Searching only by the start of the title of the book with LIKE
@@ -204,23 +153,21 @@ class Books extends Model implements
 
 }
 
+
 ```
 
-### Sortable fields:
+- Sortable fields:
 
 You can define the fields that will be used as default sorting of your model on the index action. Also, you can pass an "order" input used by the search method allowing the override the default order defined by this variable.
 
 ```
-<?php declare(strict_types = 1);
-
-namespace App\Models;
-
-use Thiagoprz\CrudTools\Models\CrudModel;
-use Thiagoprz\CrudTools\Interfaces\CrudModelInterface;
-
-class Books extends Model implements CrudModelInterface
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class Books extends Model implements ModelCrudInterface
 {
-    use CrudModel;
+    use ModelCrud;
     /**
      * Default order
      *
@@ -236,20 +183,18 @@ class Books extends Model implements CrudModelInterface
 ```
 
 
-### Upload fields:
+- Upload fields:
 
-You need to create a fileUploads method to define which and where your uploadable fields will store the files:
+You can create a fileUploads method to define which and where your uploadable fields will store the files:
 
 ```
-<?php declare(strict_types = 1);
-
-namespace App\Models;
-
-use Thiagoprz\CrudTools\Models\CrudModel;
-use Thiagoprz\CrudTools\Interfaces\CrudModelInterface;
-class User extends Authenticatable implements UploadsInterface
+<?php
+...
+use Thiagoprz\CrudTools\Models\ModelCrud;
+use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+class User extends Authenticatable implements ModelCrudInterface
 {
-    use CrudModel;
+    use ModelCrud;
     ...
     /**
      * @param Campaign $model
@@ -271,7 +216,7 @@ class User extends Authenticatable implements UploadsInterface
 
 
 ### CRUD Controller:
-A CrudController can be achieved by just creating a standard controller class using CrudController trait.
+A CRUD Controller can be achieve by just creating a standard controller class using ControllerCrud trait.
 
 The next step is to create a folder inside ``resources/views`` with the desired namespace or on root folder if the controller won't be using a specific namespace (admin on the example).
 ```
@@ -283,13 +228,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Thiagoprz\CrudTools\Http\Controllers\CrudController;
-use Thiagoprz\CrudTools\Interfaces\CrudControllerInterface;
+use Thiagoprz\CrudTools\Http\Controllers\ControllerCrud;
+use Thiagoprz\CrudTools\Interfaces\ControllerCrudInterface;
 
-class UserController extends Controller implements CrudControllerInterface
+class UserController extends Controller implements ControllerCrudInterface
 {
     use ValidatesRequests;
-    use CrudController;
+    use ControllerCrud;
     public $modelClass = User::class;
 }
 ```
@@ -317,6 +262,38 @@ Available vars: $items (the pagination object containing a filtered collection o
 > show.blade.php
 
 Available vars: $model (the model being displayed)
+
+## CRUD Generators
+
+### Model Generator:
+To easily create a model with all Crud Tools enabled use:
+```
+php artisan make:crud-model NAMESPACE/Model   
+```
+> NAMESPACE: Model's namespace
+> Model: Name of the model
+
+- Available options
+  - **--fillable**: comma separated fields for fillable attributes
+  - **--searchable**: comma separated fields for searchable attributes (based on search() method)
+  - **--primaryKey**: field or comma separated fields that are the table's primary key
+  - **--softDeletes**: if passed enables SoftDeletes trait on class
+  - **--uploads**: if passed adds fileUploads() method on class 
+  - **--logable**: adds Logable trait on model
+
+### Controller Generator:
+
+You can create a standard Controller to work with a model by using the following command:
+
+``` php artisan make:crud-controller NAMESPACE1/NAMEController NAMESPACE2/Model ```
+
+> NAMESPACE1: Controller's namespace
+>
+> NAMEController: is the name of the controller
+>
+> NAMESPACE2: Model's namespace
+>
+> Model: Name of the model
 
 ## Enabling Logs
 To enable automatic logs on your models you need to publish Spatie Activity Logger migrations:
@@ -348,12 +325,16 @@ This method returns the path for routes and views, so you can customize the url 
 
 ## Contributing
 Check the [contributing](CONTRIBUTING.md) file to have a better understanding on how to contribute to the package.
-Before starting the development please read the [Code Of Conduct](https://github.com/thiagoprz/crud-tools/blob/master/CODE_OF_CONDUCT.md).
 
 ## Support
 
 ### Issues
-Please feel free to [report](https://github.com/thiagoprz/crud-tools/issues/new) any issues on this packages, it will help a lot. I will address it as soon as possible.
+Please feel free to indicate any issues on this packages, it will help a lot. I will address it as soon as possible.
+
+### Supported By Jetbrains
+This project is being developed with the help of [Jetbrains](https://www.jetbrains.com/?from=LaravelCrudTools) through its project to support Open Source software.
+
+![Test Image 1](support/jetbrains.svg)
 
 ### Buy me a Coffee
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S4273NJ)

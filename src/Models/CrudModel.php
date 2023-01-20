@@ -1,18 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+use Thiagoprz\CrudTools\Interfaces\SearchInterface;
+use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
 
 /**
  * Trait ModelCrud
  * @package Thiagoprz\EasyCrud\Model
- * @implements ModelCrudInterface
- *
+ * @implements SearchInterface|ValidatesInterface
  * @property array $validations Validations definitions on create, update and delete scenarios
  * @property array $searchable Allows specifying fields that can be searched on search() method
  * @property array $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
@@ -24,12 +22,12 @@ use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
  * @property boolean $onlyTrashedForbidden onlyTrashed() gets forbidden on this class
  * @property boolean $noPaginationForbidden allow remove pagination forbidden on this class
  */
-trait ModelCrud
+trait CrudModel
 {
     /**
-     * @see ModelCrud::$validations
      * @param int|null $id
      * @return array
+     *@see CrudModel::$validations
      */
     public static function validations(int $id = null): array
     {
@@ -44,10 +42,10 @@ trait ModelCrud
 
     /**
      * Return the validations for the given scenario
-     * @see ModelCrud::$validations
      * @param string $scenario
      * @param int|null $id
      * @return mixed
+     *@see CrudModel::$validations
      */
     public static function validateOn(string $scenario = 'create', int $id = null): array
     {
@@ -62,7 +60,7 @@ trait ModelCrud
      * @param array $data
      * @return mixed
      */
-    public static function search(array $data)
+    public function search(array $data)
     {
         // Starts query
         $query = self::query();
@@ -100,8 +98,8 @@ trait ModelCrud
 
         /**
          * If model uses SoftDeletes allows query excluded records
-         * @see ModelCrud::$onlyTrashedForbidden
-         * @see ModelCrud::$withTrashedForbidden
+         * @see CrudModel::$onlyTrashedForbidden
+         * @see CrudModel::$withTrashedForbidden
          */
         if (in_array(SoftDeletes::class, class_uses(self::class), true)) {
             self::applyOnlyTrashed($query, $data);
@@ -116,10 +114,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$search_order
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$search_order
      */
     public static function searchOrder(&$query, array $data)
     {
@@ -139,9 +137,9 @@ trait ModelCrud
 
     /**
      * Attaches related records to every result on the search query
-     * @see ModelCrud::$search_count
      * @param $query
      * @return void
+     *@see CrudModel::$search_count
      */
     public static function searchWithCount(&$query)
     {
@@ -153,9 +151,9 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$search_with
      * @param $query
      * @return void
+     *@see CrudModel::$search_with
      */
     public static function searchWith(&$query)
     {
@@ -167,9 +165,9 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$paginationForSearch
      * @param $query
      * @return mixed
+     *@see CrudModel::$paginationForSearch
      */
     public static function setSearchPagination($query)
     {
@@ -178,10 +176,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$withTrashedForbidden
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$withTrashedForbidden
      */
     public static function applyWithTrashed($query, array $data)
     {
@@ -191,10 +189,10 @@ trait ModelCrud
     }
 
     /**
-     * @see ModelCrud::$onlyTrashedForbidden
      * @param $query
      * @param array $data
      * @return void
+     *@see CrudModel::$onlyTrashedForbidden
      */
     public static function applyOnlyTrashed($query, array $data)
     {
@@ -302,14 +300,5 @@ trait ModelCrud
             }
             $where->where($aliasField, '<=', $value);
         }
-    }
-
-    /**
-     * @param self $model
-     * @return array
-     */
-    public static function fileUploads($model): array
-    {
-        return [];
     }
 }

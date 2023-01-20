@@ -32,6 +32,7 @@ class StoreTest extends TestCase
             'phone' => $factoryData->phone,
             'city' => $factoryData->city,
         ]);
+        logger()->debug('response', [$response->content()]);
         $resource = $response->json();
         $this->assertEquals($factoryData->name, $resource['name']);
         $this->assertEquals($factoryData->email, $resource['email']);
@@ -50,7 +51,7 @@ class StoreTest extends TestCase
         $resource = $response->json();
         $requiredMessage = 'The :field field is required.';
         $this->assertEquals([
-            'error' => true,
+            'message' => 'The given data was invalid.',
             'errors' => [
                 'name' => [
                     Str::replace(':field', 'name', $requiredMessage),
