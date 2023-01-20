@@ -2,10 +2,11 @@
 
 namespace Unit\Models;
 
-use Database\Tests\Factories\DummyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+use Thiagoprz\CrudTools\database\factories\DummyFactory;
+use Thiagoprz\CrudTools\Interfaces\UploadsInterface;
+use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
 use Thiagoprz\CrudTools\Models\ModelCrud;
 
 /**
@@ -15,7 +16,7 @@ use Thiagoprz\CrudTools\Models\ModelCrud;
  * @property string $phone
  * @property string $city
  */
-class Dummy extends Model implements ModelCrudInterface
+class Dummy extends Model implements ValidatesInterface, UploadsInterface
 {
     use ModelCrud, HasFactory;
 
@@ -59,5 +60,18 @@ class Dummy extends Model implements ModelCrudInterface
     protected static function newFactory()
     {
         return DummyFactory::new();
+    }
+
+    /**
+     * @return array[]
+     */
+    public function fileUploads(): array
+    {
+        return [
+            'photo' => [
+                'name' => "$this->name.jpg",
+                'path' => "photos/dummy",
+            ],
+        ];
     }
 }

@@ -1,18 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Thiagoprz\CrudTools\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Thiagoprz\CrudTools\Interfaces\ModelCrudInterface;
+use Thiagoprz\CrudTools\Interfaces\SearchInterface;
+use Thiagoprz\CrudTools\Interfaces\ValidatesInterface;
 
 /**
  * Trait ModelCrud
  * @package Thiagoprz\EasyCrud\Model
- * @implements ModelCrudInterface
- *
+ * @implements SearchInterface|ValidatesInterface
  * @property array $validations Validations definitions on create, update and delete scenarios
  * @property array $searchable Allows specifying fields that can be searched on search() method
  * @property array $search_order Defines search() method order fields. Through request use field with name order and defined value like this: "field,direction|field_2,direction_2|..." (use as many fields to order as you wish just separating them with pipes "|")
@@ -62,7 +60,7 @@ trait ModelCrud
      * @param array $data
      * @return mixed
      */
-    public static function search(array $data)
+    public function search(array $data)
     {
         // Starts query
         $query = self::query();
@@ -302,14 +300,5 @@ trait ModelCrud
             }
             $where->where($aliasField, '<=', $value);
         }
-    }
-
-    /**
-     * @param self $model
-     * @return array
-     */
-    public static function fileUploads($model): array
-    {
-        return [];
     }
 }

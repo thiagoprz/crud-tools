@@ -18,7 +18,7 @@ class MakeCrudController extends GeneratorCommand
      */
     protected $signature = 'make:crud-controller
                             {name : The name of the controler (with namespace).}
-                            {model : The name of the Model (eg: User or Models/User depending on your directory structure).}';
+                            {model : The name of the Model (with namespace, eg: User or Models/User).}';
 
     /**
      * The console command description.
@@ -51,7 +51,23 @@ class MakeCrudController extends GeneratorCommand
         }
 
         $class = new \ReflectionClass($modelClass);
-        $stub = str_replace(['{{modelName}}', '{{modelNamespace}}'], [$class->getShortName(), $class->getName()], $stub);
+        $stub = str_replace(
+            ['{{modelName}}', '{{modelNamespace}}'],
+            [$class->getShortName(), $class->getName()],
+            $stub
+        );
+
+        $this->call('make:crud-request', [
+            'name' => 'request',
+            'scenario' => 'create',
+            'model' => $class->getName(),
+        ]);
+        $this->call('make:crud-request', [
+            'name' => 'request',
+            'scenario' => 'update',
+            'model' => $class->getName(),
+        ]);
+
         return $this->replaceNamespace($stub, $name)
             ->replaceClass($stub, $name);
     }
@@ -64,7 +80,9 @@ class MakeCrudController extends GeneratorCommand
      */
     protected function getStub()
     {
-        return config('crud-tools.template_path') ? config('crud-tools.template_path') . '/Controller.stub' : __DIR__ . '/../stubs/Controller.stub';
+        return config('crud-tools.template_path')
+            ? config('crud-tools.template_path') . '/Controller.stub'
+            : __DIR__ . '/../stubs/Controller.stub';
     }
 
     /**

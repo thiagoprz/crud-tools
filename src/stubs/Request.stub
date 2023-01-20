@@ -1,0 +1,31 @@
+<?php declare(strict_types = 1);
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
+use Thiagoprz\CrudTools\Interfaces\CrudRequestInterface;
+use {{modelNameSpace}};
+
+class {{name}} extends FormRequest implements CrudRequestInterface
+{
+    /**
+     * Returns request validations rules
+     *
+     * @return array
+     */
+    public function rules(): array
+    {
+        return {{modelName}}::validateOn('{{scenario}}');
+    }
+
+    /**
+     * Request data
+     *
+     * @return array
+     */
+    public function data(): array
+    {
+        return $this->all();
+    }
+}

@@ -20,6 +20,8 @@ class MakeCrudModel extends GeneratorCommand
     const PLACEHOLDER_PROPERTIES = '{{properties}}';
     const PLACEHOLDER_SOFTDELETES = '{{softDeletes}}';
     const PLACEHOLDER_USE_SOFTDELETES = '{{useSoftDeletes}}';
+    const PLACEHOLDER_UPLOADS = '{{uploadInterface}}';
+    const PLACEHOLDER_USE_UPLOADS = '{{useUploads}}';
 
     /**
      * The name and signature of the console command.
@@ -120,7 +122,7 @@ class MakeCrudModel extends GeneratorCommand
 
         $softDeletes = $this->option('softDeletes');
         $stub = Str::replace(self::PLACEHOLDER_SOFTDELETES, $softDeletes ? 'use SoftDeletes;' : '', $stub);
-        $stub = Str::replace(self::PLACEHOLDER_USE_SOFTDELETES, $softDeletes ? 'use Illuminate\Database\Eloquent\SoftDeletes;' : '', $stub);
+        $stub = Str::replace(self::PLACEHOLDER_USE_SOFTDELETES . PHP_EOL, $softDeletes ? 'use Illuminate\Database\Eloquent\SoftDeletes;' : '', $stub);
 
         // Timestamps
         $propertiesReplace .= PHP_EOL . ' * @property \Carbon\Carbon $created_at';
@@ -181,7 +183,7 @@ class MakeCrudModel extends GeneratorCommand
                 $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE, implode(', ', $searchable_fields) . ',' . PHP_EOL . "\t", $stub);
             }
         } else {
-            $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE, '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_SEARCHABLE . PHP_EOL, '', $stub);
         }
     }
 
@@ -195,8 +197,8 @@ class MakeCrudModel extends GeneratorCommand
             $stub = Str::replace(self::PLACEHOLDER_USE_LOGABLE, 'use Thiagoprz\CrudTools\Models\Logable;', $stub);
             $stub = Str::replace(self::PLACEHOLDER_LOGABLE, 'use Logable;', $stub);
         } else {
-            $stub = Str::replace(self::PLACEHOLDER_USE_LOGABLE, '', $stub);
-            $stub = Str::replace(self::PLACEHOLDER_LOGABLE, '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_USE_LOGABLE . PHP_EOL, '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_LOGABLE . PHP_EOL, '', $stub);
         }
     }
 
@@ -208,21 +210,22 @@ class MakeCrudModel extends GeneratorCommand
     private function buildUpload(string &$stub): void
     {
         if ($this->option('uploads')) {
+            $stub = Str::replace(self::PLACEHOLDER_USE_UPLOADS, 'use Thiagoprz\CrudTools\Interfaces\UploadsInterface;', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_UPLOADS, ', UploadsInterface', $stub);
             $upload  = <<<EOD
 
     /**
      * Upload files available on fillable fields, defined by attribute and customizable path
      *
-     * @param \$model DummyClass
      * @return array
      */
-    public static function fileUploads(DummyClass \$model)
+    public function fileUploads(): array
     {
         return [
             // TODO: adjust according to your model file fields 
             'photo' => [
-                'path' => "photos/\$model->id",
-                'name' => Str::slug(\$model->name) . '.jpg',
+                'path' => "photos/\$this->id",
+                'name' => Str::slug(\$this->name) . '.jpg',
             ],
         ];
     }
@@ -231,6 +234,9 @@ class MakeCrudModel extends GeneratorCommand
 EOD;
             $lastSemicolon = strrpos($stub, ';');
             $stub = Str::substrReplace($stub, PHP_EOL . $upload, $lastSemicolon + 1);
+        } else {
+            $stub = Str::replace(self::PLACEHOLDER_USE_UPLOADS . PHP_EOL, '', $stub);
+            $stub = Str::replace(self::PLACEHOLDER_UPLOADS, '', $stub);
         }
     }
 
